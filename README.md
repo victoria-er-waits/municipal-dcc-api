@@ -8,6 +8,20 @@ MVP coverage: **Surrey** and **Victoria** (BC) only. Read-only HTTP API with API
 
 ---
 
+## Public API
+
+| | |
+|---|---|
+| **Base URL** | `https://<TBD>.onrender.com` — _placeholder, filled in after the Render deploy_ |
+| **Health** | `GET <base>/health` |
+| **Interactive docs** | `<base>/docs` (Swagger UI) · `<base>/openapi.json` |
+| **Get a free key** | `curl -s -X POST <base>/v1/keys` |
+| **Docs** | this README + [docs/index.md](docs/index.md) (GitHub Pages not enabled yet) |
+
+Billing runs in **Stripe test mode** until further notice. Operators: see [DEPLOY.md](DEPLOY.md) (Docker + Render).
+
+---
+
 ## Limitations (front and center)
 
 | Issue | What it means |
@@ -105,7 +119,7 @@ Nothing payment-related is hardcoded, and this build runs Stripe in **test mode 
 | `STRIPE_WEBHOOK_SECRET` | Signing secret (`whsec_…`) of a webhook endpoint at `{PUBLIC_BASE_URL}/v1/stripe/webhook` listening for `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted` |
 | `PUBLIC_BASE_URL` | Public URL of the API (upgrade links + Checkout success/cancel URLs). Default `http://127.0.0.1:8080` |
 | `DATABASE_PATH` | SQLite file for accounts / key hashes / usage / Stripe ids. Default `db/accounts.sqlite3` (gitignored). The rate data DB stays `db/dcc.sqlite3` (`DCC_DB` to override). |
-| `ADMIN_UNLOCK_TOKEN` | **Manual/dev only.** Enables `POST /v1/admin/unlock` to set a key's plan without Stripe (test purchase). Unset = disabled (404). |
+| `ADMIN_UNLOCK_TOKEN` | **Manual/dev only — leave unset in production.** Enables `POST /v1/admin/unlock` to set a key's plan without Stripe (test purchase). Unset = disabled (404). |
 
 Full walkthrough (Stripe test-mode setup, admin unlock, going live): [`DAY5_VERIFICATION.md`](DAY5_VERIFICATION.md).
 
@@ -164,6 +178,8 @@ Behind a reverse proxy, run uvicorn with `--proxy-headers --forwarded-allow-ips=
 
 Requirements: Python 3.11+ recommended. Node 18+ only if you run the JS example.
 
+Production / Docker: `docker build -t municipal-dcc-api . && docker run -p 8080:8080 -v dcc-accounts:/data municipal-dcc-api` — full guide in [DEPLOY.md](DEPLOY.md).
+
 ---
 
 ## Repository layout (public surface)
@@ -184,6 +200,7 @@ dcc/                      ← FastAPI app + parsers
 db/dcc.sqlite3            ← ready-to-serve rate data (accounts DB is separate + gitignored)
 scripts/run_api.sh
 scripts/build_db.py
+Dockerfile, render.yaml    ← production image + Render Blueprint (see DEPLOY.md)
 data/normalized.json      ← Day 1 curated Surrey rows (rebuild input)
 sources/                  ← public bylaw PDFs / extracts
 ```

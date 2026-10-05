@@ -4,6 +4,7 @@
 
 This MVP exposes read-only rate and change data for **Surrey** and **Victoria** (British Columbia), with every value traceable to a bylaw PDF, URL, effective date, and normalization rules.
 
+**Base URL (public):** _coming soon — Render deploy in progress (placeholder `https://<service>.onrender.com`)_  
 **Base URL (local):** `http://127.0.0.1:8080`  
 **Authentication:** API key (`X-API-Key: dcc_…` or `Authorization: Bearer dcc_…`) for `/rates` and `/changes`. Free keys are instant: `POST /v1/keys`. See [Plans & pricing](#plans--pricing).
 
@@ -123,7 +124,7 @@ python3 examples/python/get_rates.py
 node examples/javascript/get_rates.mjs
 ```
 
-Saved JSON fixtures live in [`examples/sample-responses/`](../examples/sample-responses/).
+Saved JSON fixtures live in [`examples/sample-responses/`](https://github.com/victoria-er-waits/municipal-dcc-api/tree/main/examples/sample-responses).
 
 ---
 
@@ -221,7 +222,7 @@ plus a warning explaining the Wayback basis. The live `victoria.ca` download cur
 
 ## Example responses
 
-Truncated for readability. Full captured samples: [`examples/sample-responses/`](../examples/sample-responses/).
+Truncated for readability. Full captured samples: [`examples/sample-responses/`](https://github.com/victoria-er-waits/municipal-dcc-api/tree/main/examples/sample-responses).
 
 **Health**
 
@@ -320,4 +321,4 @@ Internal Day 1–3 notes (`DAY1_VERIFICATION.md`, `DAY2_3_*.md`) document how th
 
 ## License
 
-MIT — see [`LICENSE`](../LICENSE).
+MIT — see [`LICENSE`](https://github.com/victoria-er-waits/municipal-dcc-api/blob/main/LICENSE).
