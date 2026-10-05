@@ -1,0 +1,9 @@
+{
+    "error": "payment_required",
+    "message": "Surrey requires a paid plan. Your plan: free. Free plan includes: victoria current rates.",
+    "plan": "free",
+    "upgrade_url": "http://127.0.0.1:8080/v1/plans",
+    "checkout": "POST http://127.0.0.1:8080/v1/checkout  (header X-API-Key, JSON body {\"plan\": \"starter\"|\"pro\"})",
+    "required_plan": "starter",
+    "price": "$49/month"
+}

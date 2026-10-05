@@ -1,0 +1,42 @@
+# Render Blueprint — Municipal DCC API (Docker web service).
+# Contains NO secret values. Secrets use `sync: false` → Render prompts for them on first Blueprint creation;
+# for an existing service, set/rotate them in Dashboard → Environment. See DEPLOY.md.
+services:
+  - type: web
+    name: municipal-dcc-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: oregon
+    # A persistent disk (needed so API keys / paid plans survive redeploys) requires a paid instance.
+    # 0.5c-512mb = Render's entry paid web plan. `free` works for a smoke test but has NO disk: every
+    # deploy/restart/spin-down wipes db/accounts → all issued keys and paid upgrades are lost.
+    plan: 0.5c-512mb
+    healthCheckPath: /health
+    # commit = a push to the tracked branch rebuilds the image from this public repo.
+    # This repo's image is Victoria-only. Copy the live rate DB to /data/dcc.sqlite3
+    # BEFORE the next deploy or paid Surrey calls 404. See DEPLOY.md. No env change required.
+    autoDeployTrigger: commit
+    disk:
+      name: accounts
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      # ---- non-secret ----
+      - key: PORT
+        value: "8080"
+      - key: DATABASE_PATH
+        value: /data/accounts.sqlite3
+      # Set to the final public URL, e.g. https://municipal-dcc-api.onrender.com (no trailing slash).
+      - key: PUBLIC_BASE_URL
+        sync: false
+      # ---- secrets (prompted, never committed) ----
+      - key: STRIPE_SECRET_KEY        # sk_test_... (test mode only; live refused unless STRIPE_ALLOW_LIVE=true)
+        sync: false
+      - key: STRIPE_PRICE_STARTER     # price_... ($49/mo recurring)
+        sync: false
+      - key: STRIPE_PRICE_PRO         # price_... ($149/mo recurring)
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET    # whsec_... for {PUBLIC_BASE_URL}/v1/stripe/webhook
+        sync: false
+      # ADMIN_UNLOCK_TOKEN is intentionally NOT defined: unset = /v1/admin/unlock returns 404 (disabled).
+      # STRIPE_ALLOW_LIVE is intentionally NOT defined: live Stripe keys stay refused.

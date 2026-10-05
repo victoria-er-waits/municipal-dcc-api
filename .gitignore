@@ -1,0 +1,52 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Testing / tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Runtime
+logs/
+*.log
+nohup.out
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# Secrets (none expected; belt-and-suspenders)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+
+# Day 5: customer/account data (API key hashes, Stripe ids, usage) — never commit
+db/accounts.sqlite3
+db/accounts.sqlite3-*
+*.accounts.sqlite3
+
+# Paid Surrey dataset — operator-only. Never commit.
+# The tracked db/dcc.sqlite3 is the Victoria-only public fixture. If you overlay a
+# full operator database onto that path for a private image build, do not git add it.
+data/surrey.normalized.json
+operator-data/*.sqlite3
+operator-data/*.sqlite
+operator-data/*.json
+sources/surrey_*

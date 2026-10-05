@@ -1,0 +1,37 @@
+{
+    "municipalities": [
+        {
+            "slug": "surrey",
+            "municipality": "Surrey",
+            "province": "BC",
+            "bylaw_id": "21174",
+            "effective_date": "2024-05-15",
+            "source_url": "https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf",
+            "source_retrieval_method": "official_https",
+            "provisional": false,
+            "current_snapshot_version": null,
+            "rate_count": 0,
+            "last_checked_at": null,
+            "min_plan": "starter"
+        },
+        {
+            "slug": "victoria",
+            "municipality": "Victoria",
+            "province": "BC",
+            "bylaw_id": "24-053",
+            "effective_date": "2024-11-14",
+            "source_url": "https://www.victoria.ca/media/file/development-cost-charges-bylaw-24-053",
+            "source_retrieval_method": "wayback_provisional",
+            "provisional": true,
+            "current_snapshot_version": 2,
+            "rate_count": 36,
+            "last_checked_at": "2026-10-05T21:31:32+00:00",
+            "min_plan": "free"
+        }
+    ],
+    "access": {
+        "auth": "X-API-Key header required for /rates and /changes",
+        "get_key": "POST /v1/keys",
+        "plans": "GET /v1/plans"
+    }
+}

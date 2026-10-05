@@ -1,0 +1,12 @@
+{
+    "status": "ok",
+    "db": "/workspace/db/dcc.sqlite3",
+    "snapshots": {
+        "victoria": 2
+    },
+    "billing": {
+        "checkout_enabled": false,
+        "webhook_enabled": false,
+        "mode": null
+    }
+}

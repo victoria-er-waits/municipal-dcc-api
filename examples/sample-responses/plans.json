@@ -1,0 +1,54 @@
+{
+    "plans": {
+        "free": {
+            "name": "Free",
+            "price_per_month": 0,
+            "municipalities": [
+                "victoria"
+            ],
+            "changes": false,
+            "history": false,
+            "daily_limit": 50,
+            "summary": "Victoria current rates only; 50 requests/day."
+        },
+        "starter": {
+            "name": "Starter",
+            "price_per_month": 49,
+            "municipalities": [
+                "surrey",
+                "victoria"
+            ],
+            "changes": true,
+            "history": false,
+            "daily_limit": 5000,
+            "summary": "Surrey + Victoria current rates, latest change diff (/changes); 5,000 requests/day."
+        },
+        "pro": {
+            "name": "Pro",
+            "price_per_month": 149,
+            "municipalities": [
+                "surrey",
+                "victoria"
+            ],
+            "changes": true,
+            "history": true,
+            "daily_limit": 50000,
+            "summary": "Everything in Starter + historical snapshots (?version=, explicit from/to versions); 50,000 requests/day."
+        }
+    },
+    "how_to_upgrade": [
+        "1. Get a free key: POST http://127.0.0.1:8080/v1/keys",
+        "2. POST http://127.0.0.1:8080/v1/checkout with header X-API-Key and body {\"plan\": \"starter\"} or {\"plan\": \"pro\"}",
+        "3. Open the returned checkout_url and pay with Stripe Checkout.",
+        "4. Your SAME key is upgraded automatically (Stripe webhook). Check with GET /v1/account."
+    ],
+    "payments": {
+        "checkout_enabled": false,
+        "webhook_enabled": false
+    },
+    "notes": [
+        "Prices are monthly subscriptions billed by Stripe; cancel any time (plan reverts to free). Currency is whatever the operator set on the Stripe Price.",
+        "Daily limits reset at 00:00 UTC.",
+        "Victoria data is provisional (Wayback-sourced) on every plan."
+    ]
+}

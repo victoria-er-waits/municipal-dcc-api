@@ -1,0 +1,187 @@
+# Deploying the Municipal DCC API
+
+> **Next Render deploy of this tree drops Surrey unless you preserve the operator database first.**
+>
+> The public `Dockerfile` copies `db/dcc.sqlite3`, which is now **Victoria only**. The service already running at `https://municipal-dcc-api.onrender.com` keeps Surrey only until the next image build. `render.yaml` still has `autoDeployTrigger: commit`, so a push to the tracked branch rebuilds from git.
+>
+> This change does **not** edit Render environment variables and does **not** turn on live Stripe. Do the disk copy below **before** that rebuild. No plan upgrade is required: the service already has a disk at `/data`.
+
+Target: **one Docker web service on Render** (Blueprint: [`render.yaml`](render.yaml), image: [`Dockerfile`](Dockerfile)).
+Any Docker host (Fly.io, Railway, a VM) works the same way: build the image, mount a volume at `/data`, set env vars.
+
+---
+
+## 0. Open-core data: keep Surrey on the server, out of git
+
+| | Public git / public image | Hosted API today | After the next image build |
+|---|---|---|---|
+| Victoria rates | yes | yes | yes |
+| Surrey rates | **no** | yes (baked into the current image) | **only if** `/data/dcc.sqlite3` or a private build-arg DB is present |
+
+The app picks a rate database in this order:
+
+1. `DCC_DB` if set (do not set this on Render for this change; the disk path below needs no new variable).
+2. `/data/dcc.sqlite3` if that file exists.
+3. `db/dcc.sqlite3` inside the image (Victoria-only in the public build).
+
+### Safe rebuild (existing Render disk, no env change)
+
+Do this while the **current** image is still running, so `/app/db/dcc.sqlite3` inside the container still has Surrey.
+
+1. Render Dashboard → the service → **Shell** (SSH).
+2. Copy the live rate DB onto the persistent disk (accounts already live on that disk; this adds a second file):
+
+```bash
+cp -a /app/db/dcc.sqlite3 /data/dcc.sqlite3
+chmod 640 /data/dcc.sqlite3
+sqlite3 /data/dcc.sqlite3 "SELECT slug, COUNT(*) FROM rates GROUP BY slug;"
+```
+
+You want both `surrey` and `victoria` in that count. Leave the file there. Do not download it into this public repo.
+
+3. Pause auto-deploy (Dashboard → service → Settings) until this copy exists.
+4. Deploy the Victoria-only image (merge, or manual deploy). On boot the entrypoint chowns `/data/dcc.sqlite3` and the API serves it. `GET /health` shows `"db": "/data/dcc.sqlite3"` and a Surrey snapshot count.
+5. Confirm `GET /rates/victoria` is still 200 for a free key and `GET /rates/surrey` is still 200 for a paid key (402 for a free key).
+
+If you deploy **without** that file, Surrey endpoints return 404 `Surrey rates are not in this build` for paid keys. Victoria keeps working. Restore by copying a private backup to `/data/dcc.sqlite3` and restarting — no git commit.
+
+### Private image build (optional)
+
+```bash
+cp /secure/dcc.sqlite3 operator-data/dcc.sqlite3   # gitignored
+docker build --build-arg OPERATOR_DB=operator-data/dcc.sqlite3 -t municipal-dcc-api:operator .
+```
+
+Do not push that tag to a public registry. The public command remains `docker build -t municipal-dcc-api .` and ships Victoria only.
+
+Rebuilding the sqlite from source (operators only) needs a private `data/surrey.normalized.json` or `DCC_SURREY_NORMALIZED`, plus the official PDF at `sources/surrey_BYL_reg_21174.pdf` for the hash check:
+
+https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf
+
+`scripts/build_db.py` skips Surrey when that file is absent.
+
+> **No secrets live in this repo.** Every secret is set on the host (Render Dashboard → Environment).
+> `.env` is gitignored and excluded from the Docker build context (`.dockerignore`). `.env.example` is the template.
+
+---
+
+## 1. What the image does
+
+- `python:3.13-slim`, installs `requirements.txt`, copies only `dcc/`, `data/`, and a rate DB: public `db/dcc.sqlite3` (Victoria-only) or `OPERATOR_DB` when an operator passes that build-arg.
+- Listens on `0.0.0.0:$PORT` (default **8080**) via `uvicorn dcc.api:app --proxy-headers`.
+- Accounts DB (API-key hashes, usage, Stripe ids) → `DATABASE_PATH=/data/accounts.sqlite3`. **Mount persistent storage at `/data`** or every redeploy wipes all keys and paid plans.
+- Entrypoint (`scripts/docker-entrypoint.sh`) chowns `/data`, drops root to user `app`, and logs a warning if `ADMIN_UNLOCK_TOKEN` is set.
+
+Local smoke test (needs Docker):
+
+```bash
+docker build -t municipal-dcc-api .
+docker run --rm -p 8080:8080 -v dcc-accounts:/data municipal-dcc-api
+curl -s http://127.0.0.1:8080/health
+```
+
+Without Docker, the same command the image runs:
+
+```bash
+.venv/bin/uvicorn dcc.api:app --host 0.0.0.0 --port 8080 --proxy-headers
+# or: HOST=0.0.0.0 ./scripts/run_api.sh
+```
+
+---
+
+## 2. Render (recommended)
+
+### Option A — Blueprint (uses `render.yaml`)
+
+1. Render Dashboard → **New → Blueprint** → connect GitHub repo `victoria-er-waits/municipal-dcc-api`, branch `main`.
+2. Render reads `render.yaml`: Docker web service `municipal-dcc-api`, plan `0.5c-512mb` (paid — required for the disk), 1 GB disk at `/data`, health check `/health`.
+3. Render prompts for the `sync: false` vars. On the **first** deploy you can leave the Stripe ones blank (checkout then returns 503 `payments_not_configured`; everything else works). For `PUBLIC_BASE_URL`, enter `https://municipal-dcc-api.onrender.com` (or whatever URL Render assigns — fix it after the first deploy if it differs).
+4. Deploy → open `https://<service>.onrender.com/health` → expect `"status": "ok"`.
+
+> `sync: false` prompts only appear on initial Blueprint creation. Later secret changes: **Dashboard → service → Environment**.
+
+### Option B — manual Web Service (no Blueprint)
+
+New → **Web Service** → repo → Runtime **Docker** → Instance type: a paid plan → Advanced: Health check path `/health`, add **Disk** (mount path `/data`, 1 GB) → add env vars from the table below.
+
+### Free plan?
+
+Works for a demo (`plan: free` in `render.yaml`, delete the `disk:` block) but: no persistent disk (keys/paid plans lost on every restart/deploy/spin-down) and cold starts after ~15 min idle. **Do not take payments on the free plan.**
+
+---
+
+## 3. Environment variables (set on the host, never in git)
+
+| Var | Production value | Secret? |
+|---|---|---|
+| `PUBLIC_BASE_URL` | `https://<your-service>.onrender.com` (no trailing slash). Used in `upgrade_url` and Stripe success/cancel URLs. | no |
+| `DATABASE_PATH` | `/data/accounts.sqlite3` (already the image default; must be on the persistent disk) | no |
+| `PORT` | `8080` (set in `render.yaml`) | no |
+| `STRIPE_SECRET_KEY` | `sk_test_…` (test mode). Live keys refused unless `STRIPE_ALLOW_LIVE=true`. | **yes** |
+| `STRIPE_PRICE_STARTER` | `price_…` for $49/mo recurring | no (but keep out of git anyway) |
+| `STRIPE_PRICE_PRO` | `price_…` for $149/mo recurring | no |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_…` from the webhook endpoint below | **yes** |
+| `STRIPE_ALLOW_LIVE` | **unset** until a deliberate go-live | — |
+| `ADMIN_UNLOCK_TOKEN` | **unset / empty in production** → `POST /v1/admin/unlock` returns 404 | **yes** if ever set |
+| `FORWARDED_ALLOW_IPS` | optional; default `*` (see caveat below) | no |
+| `KEY_CREATE_LIMIT_PER_IP`, `*_DAILY_LIMIT` | optional overrides | no |
+
+### Admin unlock: OFF in production
+
+Do **not** set `ADMIN_UNLOCK_TOKEN` on the public service. With it unset, `/v1/admin/unlock` is disabled (404) and the
+only way to a paid plan is a real Stripe subscription. If you ever need a one-off manual grant: set a long random token
+(`python3 -c "import secrets;print(secrets.token_urlsafe(32))"`), do the grant, then **delete the variable and redeploy**.
+The container logs a `WARNING` at startup whenever it is set.
+
+---
+
+## 4. Stripe (test mode) wiring
+
+1. Stripe Dashboard (**Test mode** toggle on) → Product catalog → create **Starter** ($49/mo recurring) and **Pro** ($149/mo recurring) — pick CAD or USD (open decision); the API only uses the price IDs. Copy the two `price_…` IDs.
+2. Developers → API keys → copy the **test** secret key `sk_test_…`.
+3. Developers → Webhooks → **Add endpoint** → URL `https://<your-service>.onrender.com/v1/stripe/webhook`, events:
+   `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`. Copy the signing secret `whsec_…`.
+4. Render → Environment → set `STRIPE_SECRET_KEY`, `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PRO`, `STRIPE_WEBHOOK_SECRET`, confirm `PUBLIC_BASE_URL` → save (Render redeploys).
+5. `GET /health` → `billing.checkout_enabled: true`, `billing.webhook_enabled: true`, `billing.mode: "test"`.
+6. E2E: `POST /v1/keys` → `POST /v1/checkout {"plan":"starter"}` → pay with card `4242 4242 4242 4242` → `GET /v1/account` shows `plan: starter` → `GET /rates/surrey` returns 200. Then cancel the subscription in Stripe → key back to `free`.
+
+---
+
+## 5. Caveats / known limitations
+
+- **Single instance only.** SQLite on a disk; Render can't scale a service with a disk. Fine for MVP traffic.
+- **Disk disables zero-downtime deploys** on Render (brief downtime per deploy).
+- **Client IP behind the proxy.** `--proxy-headers --forwarded-allow-ips=*` makes uvicorn use the **left-most** `X-Forwarded-For` entry, which a client can spoof. Impact is limited to evading the 5-free-keys-per-IP-per-day cap (free keys only unlock Victoria at 50 req/day). Without proxy headers, all users would share the proxy's IP and signups would hit the cap almost immediately — so `*` is the pragmatic default. Harden later by trusting only the platform's proxy range.
+- **Accounts DB backups:** Render disks get daily snapshots; for anything beyond test mode also copy `/data/accounts.sqlite3` off-box periodically.
+- Interactive OpenAPI docs are public at `/docs` (no secrets exposed; admin endpoint is listed but 404s when disabled).
+
+---
+
+## 6. Public docs
+
+Until GitHub Pages is enabled, the public docs are the GitHub repo itself:
+
+- README: https://github.com/victoria-er-waits/municipal-dcc-api#readme
+- Full reference: https://github.com/victoria-er-waits/municipal-dcc-api/blob/main/docs/index.md
+
+**Optional GitHub Pages:** repo → Settings → Pages → Source *Deploy from a branch* → `main` / `/docs`. Pages renders
+`docs/index.md` as `https://victoria-er-waits.github.io/municipal-dcc-api/` (its links to `examples/` and `LICENSE` are
+absolute GitHub URLs so they work there too). No `docs/index.html` is added on purpose — it would shadow `index.md`.
+
+Also live once deployed: `https://<your-service>.onrender.com/docs` (Swagger UI) and `/openapi.json`.
+
+---
+
+## 7. Pre-push / pre-deploy secrets check
+
+```bash
+git ls-files | grep -E '(^|/)\.env$|accounts\.sqlite3|\.pem$|\.key$' && echo "STOP: secret file tracked" || echo "no secret files tracked"
+git grep -nE 'sk_(test|live)_[0-9A-Za-z]{10,}|rk_(test|live)_[0-9A-Za-z]{10,}|whsec_[0-9A-Za-z]{10,}' -- . ':!*.pdf' ':!*.png' ':!*.sqlite3' \
+  | grep -v 'placeholder_not_real' && echo "STOP: key-like string in tracked files" || echo "no Stripe key patterns in tracked files"
+git log -p --all | grep -nE 'sk_(test|live)_[0-9A-Za-z]{10,}|whsec_[0-9A-Za-z]{10,}' | grep -v 'placeholder_not_real' \
+  && echo "STOP: key in history" || echo "history clean"
+```
+
+(The test suite intentionally contains `sk_test_placeholder_not_real` / `sk_live_placeholder_not_real` — not real keys — hence the filter.)
+
+The GitHub repo also has secret scanning + push protection enabled.

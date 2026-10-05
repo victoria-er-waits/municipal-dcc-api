@@ -1,0 +1,98 @@
+{
+  "generated_at": "2026-10-05T13:15:12-07:00",
+  "purpose": "Source provenance for the public Municipal DCC API. Victoria (free) files are in this repo. Surrey (paid) is linked by official URL only; the bylaw PDF and rate tables are not vendored.",
+  "sources": [
+    {
+      "id": "surrey-bylaw-21174",
+      "municipality": "Surrey",
+      "title": "Surrey Development Cost Charge Bylaw, 2024, No. 21174",
+      "status": "current_operative",
+      "effective_date": "2024-05-15",
+      "adoption_notes": "Final adoption after third reading 2024-04-08; effective date defined in bylaw as May 15, 2024. City website (accessed 2026-10-05) states Bylaw 21174 is current.",
+      "local_path": null,
+      "source_url": "https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf",
+      "retrieved_via": "Not vendored. Fetch from the official URL if you are the operator rebuilding the private rate DB.",
+      "retrieved_at": "2026-10-05T13:04:45-07:00",
+      "sha256": "9e8374a37c16d18f947600ffa38ea27e5ab9358d827d9bbc94144148b4b7334c",
+      "bytes": 12373418,
+      "mime": "application/pdf",
+      "schedules_used": [
+        "Schedule B (Citywide)",
+        "Schedule C (City Centre additive)",
+        "Schedule D (Anniedale-Tynehead)",
+        "Schedule E (Redwood Heights)",
+        "Schedule F (Darts Hill)",
+        "Schedule G (West Clayton additive)"
+      ],
+      "rates_in_public_repo": false,
+      "operator_note": "Paid dataset. Do not commit the PDF, page extracts, or normalized Surrey rows. Official URL above is the source of record. The hosted API loads Surrey from an operator-supplied db/dcc.sqlite3 (see DEPLOY.md)."
+    },
+    {
+      "id": "surrey-2026-proposed-status",
+      "municipality": "Surrey",
+      "title": "Proposed 2026 DCC Bylaw (pending provincial approval)",
+      "status": "proposed_not_operative",
+      "effective_date": null,
+      "adoption_notes": "Council approved updated DCC bylaw for provincial submission ~2026-05-11/13. DAPIC minutes and corporate report CR_2026-R098 state bylaw awaiting provincial approval and must return for final adoption. NOT used for rates.",
+      "local_path": null,
+      "source_url": "https://www.surrey.ca/news-events/news/surrey-propose-even-lower-development-cost-charges-boost-housing-supply",
+      "supporting_urls": [
+        "https://www.surrey.ca/renovating-building-development/engineering-infrastructure/development-cost-charges",
+        "https://www.surrey.ca/sites/default/files/corporate-reports/CR_2026-R098.pdf",
+        "https://www.surrey.ca/sites/default/files/minutes/MIN-DAPIC-2026-05-12.pdf"
+      ],
+      "retrieved_via": "Web research / official city pages",
+      "retrieved_at": "2026-10-05T13:15:12-07:00",
+      "rates_included": false,
+      "rates_in_public_repo": false,
+      "operator_note": "Paid dataset. Do not commit the PDF, page extracts, or normalized Surrey rows. Official URL above is the source of record. The hosted API loads Surrey from an operator-supplied db/dcc.sqlite3 (see DEPLOY.md)."
+    },
+    {
+      "id": "victoria-bylaw-24-053",
+      "municipality": "Victoria",
+      "title": "City of Victoria Development Cost Charges Bylaw No. 24-053 (2024)",
+      "status": "current_operative",
+      "effective_date": "2024-11-14",
+      "adoption_notes": "Inspector approved 2024-08-16; adopted 2024-11-14; s.8 comes into force on adoption. Official listing: https://www.victoria.ca/city-government/bylaw-services/development-cost-charges-bylaw",
+      "local_path": "sources/victoria_dcc_bylaw_24-053.pdf",
+      "source_url": "https://www.victoria.ca/media/file/development-cost-charges-bylaw-24-053",
+      "retrieved_via": "Wayback Machine HTTP snapshot 20250829015529id_ of official victoria.ca media URL (live site bot-challenged; archive.org HTTPS TLS failed from this host, HTTP succeeded). PDF metadata: created 2024-11-15 from DOCX 00153616.DOCX;4 via Acrobat PDFMaker.",
+      "wayback_url": "http://web.archive.org/web/20250829015529id_/https://www.victoria.ca/media/file/development-cost-charges-bylaw-24-053",
+      "retrieved_at": "2026-10-05T13:12:00-07:00",
+      "sha256": "1b9706c4ba5e44c455d1c41463b96f496cec8b68712e2008263e99207c1ccd4d",
+      "bytes": 168834,
+      "mime": "application/pdf",
+      "schedules_used": [
+        "Schedule A"
+      ]
+    },
+    {
+      "id": "victoria-escr\u00edbe-consultation-97841",
+      "municipality": "Victoria",
+      "title": "F.1 Presentation \u2014 DCC Review Consultation Results (2024-06-20)",
+      "status": "supporting_pre_adoption",
+      "local_path": "sources/victoria_escribemeetings_97841.pdf",
+      "source_url": "https://pub-victoria.escribemeetings.com/filestream.ashx?DocumentId=97841",
+      "retrieved_via": "HTTPS direct from City of Victoria eSCRIBE",
+      "retrieved_at": "2026-10-05T13:05:00-07:00",
+      "sha256": "268f58ec22eec58bc0ed2c7617b313607b38f327211222abbad09e745035bc08",
+      "bytes": 572017,
+      "notes": "Pre-adoption consultation deck; Schedule A totals match adopted Bylaw 24-053. Used for cross-check only, not as primary legal source.",
+      "rates_included": false
+    },
+    {
+      "id": "victoria-escr\u00edbe-staff-report-94403",
+      "municipality": "Victoria",
+      "title": "Development Cost Charge Bylaw Update staff report",
+      "status": "supporting_pre_adoption",
+      "local_path": "sources/victoria_escribemeetings_94403.pdf",
+      "source_url": "https://pub-victoria.escribemeetings.com/filestream.ashx?DocumentId=94403",
+      "retrieved_via": "HTTPS direct from City of Victoria eSCRIBE",
+      "retrieved_at": "2026-10-05T13:05:00-07:00",
+      "sha256": "edb94a489a132b50efc5b8255c37fb741f4e6ae9af074f3994ce4357bfec0d1e",
+      "bytes": 458154,
+      "notes": "Staff report discussing annual CPI indexing practice; no evidence in Day 1 search of a post-adoption CPI amendment superseding Schedule A.",
+      "rates_included": false
+    }
+  ]
+}
