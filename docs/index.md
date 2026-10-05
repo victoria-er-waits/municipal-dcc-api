@@ -4,7 +4,7 @@
 
 This MVP exposes read-only rate and change data for **Surrey** and **Victoria** (British Columbia), with every value traceable to a bylaw PDF, URL, effective date, and normalization rules.
 
-**Base URL (public):** _coming soon — Render deploy in progress (placeholder `https://<service>.onrender.com`)_  
+**Base URL (public):** `https://municipal-dcc-api.onrender.com`  
 **Base URL (local):** `http://127.0.0.1:8080`  
 **Authentication:** API key (`X-API-Key: dcc_…` or `Authorization: Bearer dcc_…`) for `/rates` and `/changes`. Free keys are instant: `POST /v1/keys`. See [Plans & pricing](#plans--pricing).
 

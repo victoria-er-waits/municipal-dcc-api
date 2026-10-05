@@ -12,7 +12,7 @@ MVP coverage: **Surrey** and **Victoria** (BC) only. Read-only HTTP API with API
 
 | | |
 |---|---|
-| **Base URL** | `https://<TBD>.onrender.com` — _placeholder, filled in after the Render deploy_ |
+| **Base URL** | `https://municipal-dcc-api.onrender.com` |
 | **Health** | `GET <base>/health` |
 | **Interactive docs** | `<base>/docs` (Swagger UI) · `<base>/openapi.json` |
 | **Get a free key** | `curl -s -X POST <base>/v1/keys` |
