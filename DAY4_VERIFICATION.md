@@ -100,7 +100,7 @@ Searched public Day 4 surface for billing / dashboard / webhooks / SDK / marketp
 
 ## Git / publish readiness
 
-- `git init` performed; Day 4 public surface committed (see `git log -1`).
+- `git init` performed; Day 4 public surface committed as `e68dddf` on branch `main` (see `git log -1`).
 - **No GitHub remote added. No `gh repo create` executed.**
 - `gh auth status`: logged in as **kylethomas891615-hue** (scopes `gist`, `read:org`, `repo`).
 - Ready-to-run create command is documented in `PUBLISH.md` for human confirmation:
