@@ -27,11 +27,15 @@ def test_victoria_parser_matches_day1():
     assert len(rows) == 36
 
 
-def test_surrey_parser_count_and_units():
+def test_public_tree_has_no_surrey_rates():
+    """Open-core boundary: the committed fixture cannot rebuild the paid schedule."""
     rows = surrey.parse()
-    assert len(rows) == 826
-    assert not [r for r in rows if r["unit_normalized"].startswith("unmapped")]
-    assert len({r["rate_key"] for r in rows}) == 826
+    assert rows == []
+    data = json.loads(DAY1_NORMALIZED.read_text())
+    assert data["meta"]["municipalities"] == ["Victoria"]
+    assert data["meta"]["row_count"] == 36
+    assert [r for r in data["rates"] if r["municipality"] == "Surrey"] == []
+    assert len(data["rates"]) == 36
 
 
 def test_empty_diff_when_unchanged(conn):
@@ -66,7 +70,8 @@ def test_api_endpoints(tmp_path, monkeypatch):
     db = tmp_path / "api.sqlite3"
     c = connect(db)
     init_db(c)
-    pipeline.ingest(c, "surrey")
+    skipped = pipeline.ingest(c, "surrey")
+    assert skipped["reason"] == "surrey_not_bundled"
     pipeline.ingest(c, "victoria")
     rows = victoria.parse("t")
     rows[0]["rate"] = 1.0
@@ -86,9 +91,9 @@ def test_api_endpoints(tmp_path, monkeypatch):
     for f in ("bylaw_id", "source_url", "source_version_date", "extracted_value", "normalization_rules",
               "last_checked_at"):
         assert f in v["rates"][0]["provenance"]
-    s = client.get("/rates/surrey", params={"charge_type": "Total DCC", "schedule": "B"}).json()
-    assert s["provisional"] is False and s["count"] > 0
+    s = client.get("/rates/surrey", params={"charge_type": "Total DCC", "schedule": "B"})
+    assert s.status_code == 404 and "not in this build" in s.json()["detail"]
     ch = client.get("/changes/victoria").json()
     assert ch["change_count"] == 1 and ch["changes"][0]["new_value"] == 1.0
-    assert client.get("/changes/surrey").json()["change_count"] == 0
+    assert client.get("/changes/surrey").status_code == 404
     assert client.get("/rates/vancouver").status_code == 404

@@ -3,7 +3,7 @@
 **Date:** 2026-10-05 (PT)  
 **Municipalities:** Surrey BC, City of Victoria BC  
 **Goal:** Prove official DCC fee schedules are extractable and commercially useful before any API build.  
-**Scope gate:** No API, auth, billing, or marketplace work.
+**Scope gate (Day 1):** Source extraction only.
 
 ---
 
@@ -11,13 +11,13 @@
 
 | Municipality | Document | Status | Local path | Official URL |
 |---|---|---|---|---|
-| Surrey | Development Cost Charge Bylaw, 2024, No. **21174** | **Current / operative** (effective **2024-05-15**) | `sources/surrey_BYL_reg_21174.pdf` | https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf |
+| Surrey | Development Cost Charge Bylaw, 2024, No. **21174** | **Current / operative** (effective **2024-05-15**) | *(not in the public repo — paid source)* | https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf |
 | Surrey | Proposed **2026** DCC bylaw | **Not operative** — Council approved for provincial submission (May 2026); awaiting provincial approval + final adoption | *(not downloaded as rate source)* | City news / CR_2026-R098 / DAPIC minutes |
 | Victoria | Development Cost Charges Bylaw No. **24-053** | **Current / operative** (adopted **2024-11-14**; in force on adoption) | `sources/victoria_dcc_bylaw_24-053.pdf` | https://www.victoria.ca/media/file/development-cost-charges-bylaw-24-053 |
 
 ### Retrieval notes
 
-- **Surrey PDF:** Direct HTTPS download from surrey.ca succeeded.
+- **Surrey PDF:** Direct HTTPS download from surrey.ca succeeded during extraction. The file is not committed; use the official URL.
 - **Victoria file:** Live `victoria.ca` media URL is behind a bot interstitial (“One moment, please…”). Direct/curl/headless Chrome failed. Official PDF recovered via **Internet Archive Wayback** snapshot `20250829015529` of the same official media URL (HTTP fetch; archive.org HTTPS TLS failed from this host). PDF metadata shows creation from Word DOCX `00153616.DOCX;4` on 2024-11-15, consistent with adoption the prior day.
 - City of Victoria eSCRIBE consultation deck (`DocumentId=97841`) and staff report (`94403`) saved as **supporting** cross-checks only.
 
@@ -53,19 +53,17 @@ Footnotes (a)–(j) define DU caps and special rules (e.g. max $/DU, trailer pad
 
 All checks performed against rendered/PDF source text on 2026-10-05 PT.
 
+Surrey dollar amounts from this check were **removed from the public repository** (paid schedule). Victoria rows below are the free fixture and remain.
+
 | # | Municipality | Use / line | Field | Extracted value | Source evidence | Result |
 |---|---|---|---|---|---|---|
-| 1 | Surrey | Schedule B line 3 — RF / RF-G / RF-SS / RF-12 / RF-12C / RF-13 | **Total DCC** | **$55,260 /lot** | Rendered Schedule B page; printed total column | **PASS** |
-| 2 | Surrey | Schedule B line 2 — RA / RH / etc. | Components + Total | Water $3,520 … Total **$50,741 /lot** | Rendered Schedule B; component sum = $50,741 | **PASS** |
-| 3 | Surrey | Schedule B line 7 — RM-10/15/30 | **Total DCC** | **$29.63 /sq.ft. of DU** | Rendered Schedule B; footnote (b) max $51,847/DU noted | **PASS** |
-| 4 | Surrey | Schedule B line 19 — Commercial ground floor | **Total DCC** | **$14.58 /sq.ft. of BA** | Components 0.81+1.20+7.99+1.87+2.71+0 = 14.58; matches printed total | **PASS** |
-| 5 | Surrey | Schedule B line 33 — Highway 99 Commercial | **Total DCC** | **$299,709 /acre** | Rendered Schedule B institutional/corridor section | **PASS** |
+| 1–5 | Surrey | Schedules B–G | component and total rows | *(not in the public repo)* | Official bylaw PDF on surrey.ca — not vendored | checked privately; figures withheld |
 | 6 | Victoria | Schedule A — Low density residential | **Total DCC** | **$24,582.06** per lot/DU | Bylaw PDF Schedule A; Transportation $9,254.76 … Parks $8,580.10 | **PASS** |
 | 7 | Victoria | Schedule A — Medium density residential | **Total DCC** | **$14,529.66** per DU | Bylaw PDF Schedule A | **PASS** |
 | 8 | Victoria | Schedule A — Commercial | **Total DCC** | **$91.03 /m² TFA** | Bylaw PDF Schedule A | **PASS** |
 | 9 | Victoria | Schedule A — Industrial | **Total DCC** | **$30.70 /m² TFA** | Bylaw PDF Schedule A | **PASS** |
 
-**Extra note (Surrey line 3):** Component sum of extracted Water/Sewer/Arterial/Collector/Drainage/Parkland = **$55,259** vs printed total **$55,260** ($1). `Total DCC` uses the **printed** schedule total; notes field records the variance. Same class of $1 OCR/rounding risk may exist elsewhere on dense Schedule B scans.
+**Extra note (Surrey totals):** Some printed schedule totals differ from the sum of components by about a dollar. The hosted dataset keeps the printed total and records the variance. Those figures are not in this repository.
 
 ---
 
@@ -75,7 +73,7 @@ All checks performed against rendered/PDF source text on 2026-10-05 PT.
 2. **Victoria live download friction:** Official media URL is bot-gated; Day 1 used Wayback of the same official URL. Re-fetch live file when access allows; re-hash against `sources_manifest.json`.
 3. **Victoria fee-guide vs Schedule A:** City “Guide to Building Permit Fees and Deposits” (search index) shows higher amounts (e.g. low-density **$25,149.91** vs Schedule A **$24,582.06** ≈ +2.3%). Possible CPI index amendment under B.C. Reg. 130/2010, but **no adopted amendment bylaw located** in Day 1. **Fee-guide figures omitted.**
 4. **Surrey Schedule B PDF text extraction quality:** Dense multi-column table; automated `pdftotext`/table extract garbles some glyphs. Day 1 relied on **pdfplumber + rendered page images** for Schedule B; area schedules D/E/F were cleaner.
-5. **Surrey industrial Developed Area total (line 25):** Printed total OCR ambiguous (~$108,405–$108,408). Dataset uses **component sum $108,405** with an explicit note.
+5. **Surrey industrial Developed Area total (line 25):** Printed total was OCR-ambiguous. The operator dataset records an explicit note and is not in this repository.
 6. **Darts Hill Schedule F lines 8–10:** Automated table merge; values entered from visible component columns and noted.
 7. **Unit column OCR “not”** on some Darts Hill single-family lines: interpreted as **/lot** (consistent with B/D/E); noted on those rows.
 8. **Applicability complexity:** City Centre = B+C; West Clayton = B+G; Anniedale/Redwood/Darts = D/E/F only. API consumers will need area logic — data rows encode this in `use_type`/`notes` but do not yet model geographies.
@@ -87,16 +85,16 @@ All checks performed against rendered/PDF source text on 2026-10-05 PT.
 
 | Artifact | Path |
 |---|---|
-| Normalized rates | `data/normalized.json` |
-| Source manifest | `data/sources_manifest.json` |
+| Normalized rates (public) | `data/normalized.json` (Victoria only) |
+| Source manifest | `data/sources_manifest.json` (Surrey linked by official URL; PDF not vendored) |
 | This report | `DAY1_VERIFICATION.md` |
-| Primary sources | `sources/surrey_BYL_reg_21174.pdf`, `sources/victoria_dcc_bylaw_24-053.pdf` |
+| Primary sources in git | `sources/victoria_dcc_bylaw_24-053.pdf` |
+| Surrey bylaw | https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf (not committed) |
 
-### Row counts (`data/normalized.json`)
+### Row counts (public `data/normalized.json`)
 
-- **Total rate rows:** 862  
-- **Surrey:** 826 (component + total rows across Schedules B–G)  
 - **Victoria:** 36 (6 uses × 6 charge fields)
+- **Surrey:** not in the public tree (served only from the operator rate database on the hosted API)
 
 Schema fields present on every row:  
 `municipality`, `charge_type`, `use_type`, `unit`, `rate`, `currency` (CAD), `effective_date`, `source_document`, `source_url`, `extracted_at`, optional `notes`.

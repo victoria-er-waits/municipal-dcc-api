@@ -3,7 +3,8 @@
 
 Usage:
   python examples/python/get_rates.py
-  BASE_URL=http://127.0.0.1:8080 DCC_API_KEY=dcc_... python examples/python/get_rates.py
+  DCC_API_KEY=dcc_... python examples/python/get_rates.py
+  BASE_URL=http://127.0.0.1:8080 python examples/python/get_rates.py
 
 If DCC_API_KEY is unset, a free key is created (POST /v1/keys) and printed — save it.
 """
@@ -16,7 +17,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:8080").rstrip("/")
+BASE_URL = os.environ.get("BASE_URL", "https://municipal-dcc-api.onrender.com").rstrip("/")
 API_KEY = os.environ.get("DCC_API_KEY")
 
 
@@ -45,7 +46,8 @@ def main() -> int:
         munis = get("/municipalities")
     except urllib.error.URLError as exc:
         print(f"Could not reach API at {BASE_URL}: {exc}", file=sys.stderr)
-        print("Start it with: ./scripts/run_api.sh", file=sys.stderr)
+        print("Hosted docs: https://municipal-dcc-api.onrender.com/docs", file=sys.stderr)
+        print("Or start a local Victoria-only server: ./scripts/run_api.sh", file=sys.stderr)
         return 1
 
     print("Municipalities:")

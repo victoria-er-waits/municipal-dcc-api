@@ -21,7 +21,7 @@ def rates_db(tmp_path_factory):
     db = tmp_path_factory.mktemp("rates") / "api.sqlite3"
     c = connect(db)
     init_db(c)
-    pipeline.ingest(c, "surrey")
+    assert pipeline.ingest(c, "surrey")["reason"] == "surrey_not_bundled"
     pipeline.ingest(c, "victoria")
     rows = victoria.parse("t")
     rows[0]["rate"] = 1.0
@@ -100,7 +100,8 @@ def test_admin_unlock_starter_then_pro(client):
     assert client.post("/v1/admin/unlock", json={"api_key": k, "plan": "starter"}).status_code == 403
     r = client.post("/v1/admin/unlock", json={"api_key": k, "plan": "starter"}, headers={"X-Admin-Token": ADMIN})
     assert r.status_code == 200 and r.json()["plan"] == "starter"
-    assert client.get("/rates/surrey", headers=H(k)).json()["provisional"] is False
+    surrey = client.get("/rates/surrey", headers=H(k))
+    assert surrey.status_code == 404 and "not in this build" in surrey.json()["detail"]
     ch = client.get("/changes/victoria", headers=H(k)).json()
     assert ch["provisional"] is True and ch["change_count"] == 1
     assert client.get("/changes/victoria?from_version=1&to_version=2", headers=H(k)).status_code == 200  # == default
@@ -173,7 +174,7 @@ def test_webhook_upgrade_and_cancel(client, monkeypatch):
     r = client.post("/v1/stripe/webhook", content=body, headers=hdr)
     assert r.status_code == 200 and "starter" in r.json()["result"]
     assert client.post("/v1/stripe/webhook", content=body, headers=hdr).json()["result"] == "duplicate_ignored"
-    assert client.get("/rates/surrey", headers=H(k["api_key"])).status_code == 200
+    assert client.get("/rates/surrey", headers=H(k["api_key"])).status_code == 404
     # plan change to pro via subscription.updated (price mapping)
     upd = {"id": "evt_2", "type": "customer.subscription.updated", "data": {"object": {
         "id": "sub_1", "customer": "cus_1", "status": "active", "metadata": {},

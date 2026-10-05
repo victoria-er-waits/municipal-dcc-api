@@ -1,9 +1,13 @@
 """Build db/dcc.sqlite3 from scratch.
 
-Surrey:   v1 = Day 1 baseline import; v2 = re-ingest after source re-check (forced) -> REAL empty diff.
-Victoria: v1 = SYNTHETIC DEMO prior (Schedule A with 3 documented fake older values, is_synthetic=1);
-          v2 = real parse of Bylaw 24-053 Schedule A -> /changes/victoria returns 3 demo changes.
-          Served current rates (v2) are 100% real bylaw values.
+Public tree: Victoria only.
+  v1 = SYNTHETIC DEMO prior (Schedule A with 3 documented fake older values, is_synthetic=1);
+  v2 = real parse of Bylaw 24-053 Schedule A -> /changes/victoria returns 3 demo changes.
+  Served current rates (v2) are real bylaw values.
+
+Surrey (paid) is included only when an operator-supplied normalized file is present
+(`data/surrey.normalized.json` or `DCC_SURREY_NORMALIZED`) AND the official PDF is
+available locally for the hash check. Do not commit that output.
 
 Usage: python scripts/build_db.py [--live]   (--live also fetches official URLs for hash checks)"""
 from __future__ import annotations
@@ -20,7 +24,7 @@ from dcc import pipeline  # noqa: E402
 from dcc.config import DAY1_NORMALIZED, DB_PATH  # noqa: E402
 from dcc.db import connect, init_db  # noqa: E402
 from dcc.normalize import add_quality_flags  # noqa: E402
-from dcc.parsers import victoria  # noqa: E402
+from dcc.parsers import surrey, victoria  # noqa: E402
 
 # Documented synthetic "previous version" values for the Victoria demo (internally consistent:
 # the Total DCC delta equals the sum of the component deltas: 70.24 + 32.13 = 102.37).
@@ -49,15 +53,18 @@ def main() -> None:
     conn = connect()
     init_db(conn)
 
-    # ---- Surrey
+    # ---- Surrey (paid). Skipped unless the operator dropped a private normalized file.
     print("Surrey:")
-    r1 = pipeline.ingest(conn, "surrey", label="v1 baseline - Day 1 import (Bylaw 21174)")
-    print("  v1", r1)
-    if args.live:
-        print("  live check:", pipeline.check_source_live(conn, "surrey"))
-    r2 = pipeline.ingest(conn, "surrey", force=True,
-                         label="v2 re-check - re-ingest after source hash verification (no content change expected)")
-    print("  v2", r2)
+    if surrey.parse():
+        r1 = pipeline.ingest(conn, "surrey", label="v1 baseline - operator import (Bylaw 21174)")
+        print("  v1", r1)
+        if args.live:
+            print("  live check:", pipeline.check_source_live(conn, "surrey"))
+        r2 = pipeline.ingest(conn, "surrey", force=True,
+                             label="v2 re-check - re-ingest after source hash verification (no content change expected)")
+        print("  v2", r2)
+    else:
+        print("  skipped — paid Surrey schedule is not in the public tree (Victoria-only build).")
 
     # ---- Victoria
     print("Victoria:")

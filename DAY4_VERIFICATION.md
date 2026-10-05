@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-05 (America/Vancouver, PT)  
 **Scope:** Public documentation, GitHub-ready repo content, one obvious first-use path.  
-**Not built (confirmed absent):** billing, fancy dashboard, webhooks, additional municipalities, elaborate SDK, marketing campaign, marketplace listing.
+**Not built in Day 4:** billing, fancy dashboard, webhooks, additional municipalities, elaborate SDK, marketing campaign.
 
 ---
 
@@ -20,7 +20,7 @@
 | `examples/sample-responses/municipalities.json` | Live capture |
 | `examples/sample-responses/rates_victoria_medium_density.json` | Live capture |
 | `examples/sample-responses/changes_victoria.json` | Live capture |
-| `examples/sample-responses/rates_surrey_rf12.json` | Live capture |
+| `examples/sample-responses/error_402_surrey_free.json` | Free-key 402 body (no Surrey rate rows) |
 | `LICENSE` | MIT |
 | `.gitignore` | `.venv/`, `__pycache__/`, `logs/`, secrets patterns |
 | `PUBLISH.md` | Human steps to create GitHub remote / push (no repo created) |
@@ -94,7 +94,7 @@ Full fixtures: `examples/sample-responses/`.
 
 ## Out-of-scope check
 
-Searched public Day 4 surface for billing / dashboard / webhooks / SDK / marketplace language — none introduced as features. README explicitly lists them under “deliberately does not include”. No new municipalities beyond Surrey + Victoria.
+Searched the public Day 4 surface for billing / dashboard / webhooks / SDK language — none introduced as features. No new municipalities beyond Surrey + Victoria.
 
 ---
 

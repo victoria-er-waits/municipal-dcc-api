@@ -45,6 +45,6 @@ If you use Origin instead of GitHub.com, add that remote the same way (`git remo
 
 ## Notes
 
-- Repo size is dominated by `sources/surrey_BYL_reg_21174.pdf` (~12 MB) plus schedule PNGs. Fine for GitHub; optional later cleanup is Git LFS or “download on build” instructions.
-- `db/dcc.sqlite3` (~2.6 MB) is committed so clone → `./scripts/run_api.sh` works without a rebuild.
+- Surrey bylaw PDFs, page extracts, and schedule images are **not** in the public tree. Link the official URL instead (see `data/sources_manifest.json`).
+- `db/dcc.sqlite3` committed here is the **Victoria-only** fixture so clone → `./scripts/run_api.sh` serves `GET /rates/victoria`. Do not replace it with an operator database and commit the result.
 - Do **not** commit `.venv/`, `logs/`, or secrets (already gitignored).

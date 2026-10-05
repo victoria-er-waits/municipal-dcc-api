@@ -161,7 +161,7 @@ Transcript: [`verification/day5_stranger_journey.txt`](verification/day5_strange
 | 4 | `GET /changes/victoria` (free) / `?version=1` | **402** (starter) / **402** (pro) ✅ |
 | 5 | 51 requests on a throwaway free key | 50 × 200, then **429** `daily_limit_exceeded` "…Upgrade to starter for 5,000/day." ✅ |
 | 6 | `POST /v1/admin/unlock` → starter | `plan: starter`, `plan_source: admin_unlock`, limit 5000 ✅ |
-| 7 | Surrey RF-12 Total B / changes / Victoria | 200 `provisional: false` rate 55260.0; changes 200 "Victoria — 3 rates changed (v1 → v2)" with `provisional: true`; Victoria still `provisional: true` ✅; `?version=1` on starter → 402 (pro) ✅ |
+| 7 | Surrey RF-12 Total B / changes / Victoria | Hosted API: 200 `provisional: false` for a paid key (dollar amount not copied here). Public tree: 404 dataset not bundled. Changes 200 "Victoria — 3 rates changed (v1 → v2)" with `provisional: true`; Victoria still `provisional: true`. `?version=1` on starter → 402 (pro) ✅ |
 | — | `POST /v1/checkout` (no Stripe) | **503** `payments_not_configured`, `missing_env: [STRIPE_SECRET_KEY, STRIPE_PRICE_STARTER, STRIPE_PRICE_PRO]` ✅ |
 | — | `POST /v1/stripe/webhook` (no secret) | **503** `webhook_not_configured` ✅ |
 | — | Cancellation → revoke | covered by `test_webhook_upgrade_and_cancel` (signed `customer.subscription.deleted` → free, Surrey 402) ✅ |

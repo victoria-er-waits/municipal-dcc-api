@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-10-05T13:15:12-07:00",
-  "purpose": "Day 1 source provenance for Canadian Municipal DCC MVP (Surrey BC, Victoria BC)",
+  "purpose": "Source provenance for the public Municipal DCC API. Victoria (free) files are in this repo. Surrey (paid) is linked by official URL only; the bylaw PDF and rate tables are not vendored.",
   "sources": [
     {
       "id": "surrey-bylaw-21174",
@@ -9,9 +9,9 @@
       "status": "current_operative",
       "effective_date": "2024-05-15",
       "adoption_notes": "Final adoption after third reading 2024-04-08; effective date defined in bylaw as May 15, 2024. City website (accessed 2026-10-05) states Bylaw 21174 is current.",
-      "local_path": "sources/surrey_BYL_reg_21174.pdf",
+      "local_path": null,
       "source_url": "https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf",
-      "retrieved_via": "HTTPS direct download from surrey.ca",
+      "retrieved_via": "Not vendored. Fetch from the official URL if you are the operator rebuilding the private rate DB.",
       "retrieved_at": "2026-10-05T13:04:45-07:00",
       "sha256": "9e8374a37c16d18f947600ffa38ea27e5ab9358d827d9bbc94144148b4b7334c",
       "bytes": 12373418,
@@ -23,7 +23,9 @@
         "Schedule E (Redwood Heights)",
         "Schedule F (Darts Hill)",
         "Schedule G (West Clayton additive)"
-      ]
+      ],
+      "rates_in_public_repo": false,
+      "operator_note": "Paid dataset. Do not commit the PDF, page extracts, or normalized Surrey rows. Official URL above is the source of record. The hosted API loads Surrey from an operator-supplied db/dcc.sqlite3 (see DEPLOY.md)."
     },
     {
       "id": "surrey-2026-proposed-status",
@@ -41,7 +43,9 @@
       ],
       "retrieved_via": "Web research / official city pages",
       "retrieved_at": "2026-10-05T13:15:12-07:00",
-      "rates_included": false
+      "rates_included": false,
+      "rates_in_public_repo": false,
+      "operator_note": "Paid dataset. Do not commit the PDF, page extracts, or normalized Surrey rows. Official URL above is the source of record. The hosted API loads Surrey from an operator-supplied db/dcc.sqlite3 (see DEPLOY.md)."
     },
     {
       "id": "victoria-bylaw-24-053",
@@ -63,9 +67,9 @@
       ]
     },
     {
-      "id": "victoria-escríbe-consultation-97841",
+      "id": "victoria-escr\u00edbe-consultation-97841",
       "municipality": "Victoria",
-      "title": "F.1 Presentation — DCC Review Consultation Results (2024-06-20)",
+      "title": "F.1 Presentation \u2014 DCC Review Consultation Results (2024-06-20)",
       "status": "supporting_pre_adoption",
       "local_path": "sources/victoria_escribemeetings_97841.pdf",
       "source_url": "https://pub-victoria.escribemeetings.com/filestream.ashx?DocumentId=97841",
@@ -77,7 +81,7 @@
       "rates_included": false
     },
     {
-      "id": "victoria-escríbe-staff-report-94403",
+      "id": "victoria-escr\u00edbe-staff-report-94403",
       "municipality": "Victoria",
       "title": "Development Cost Charge Bylaw Update staff report",
       "status": "supporting_pre_adoption",

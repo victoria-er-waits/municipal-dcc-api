@@ -21,8 +21,35 @@ from .db import connect
 
 app = FastAPI(title="Canadian Municipal DCC Data API (MVP: Surrey + Victoria)", version="0.3.0",
               description="Free: Victoria current rates (50 req/day). Starter $49/mo: Surrey + Victoria + "
-                          "/changes. Pro $149/mo: + historical snapshots. Get a key: POST /v1/keys.")
-_DB = os.environ.get("DCC_DB", str(DB_PATH))
+                          "/changes. Pro $149/mo: + historical snapshots. Get a key: POST /v1/keys. "
+                          "The public source tree ships Victoria only; Surrey is served when the "
+                          "operator rate database is installed.")
+
+
+def resolve_rate_db() -> str:
+    """Which SQLite file holds rate snapshots.
+
+    Order: explicit ``DCC_DB``, then an operator file on the persistent disk
+    (``/data/dcc.sqlite3``), then the image/repo database (Victoria-only in the
+    public tree). The disk path lets a Render redeploy keep Surrey without
+    putting that file in git and without a new environment variable.
+    """
+    explicit = os.environ.get("DCC_DB")
+    if explicit:
+        return explicit
+    on_disk = "/data/dcc.sqlite3"
+    if os.path.isfile(on_disk):
+        return on_disk
+    return str(DB_PATH)
+
+
+_DB = resolve_rate_db()
+
+_SURREY_ABSENT = (
+    "Surrey rates are not in this build. The public repository ships Victoria only. "
+    "Paid Surrey rates are served by the hosted API (https://municipal-dcc-api.onrender.com) "
+    "from the operator rate database. See DEPLOY.md before rebuilding that service."
+)
 
 _api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 _bearer = HTTPBearer(auto_error=False)
@@ -214,6 +241,8 @@ def rates(
         _authorize(acct, response, slug, history=version is not None and (cur is None or version != cur["version"]))
         snap = _snapshot(conn, slug, version)
         if snap is None:
+            if slug == "surrey":
+                raise HTTPException(404, detail=_SURREY_ABSENT)
             raise HTTPException(404, detail=f"No snapshot for {slug} (version={version})")
         sql = "SELECT * FROM rates WHERE snapshot_id=?"
         args: list = [snap["snapshot_id"]]
@@ -273,6 +302,8 @@ def changes(
         name = MUNICIPALITIES[slug]["municipality"]
         to_s = _snapshot(conn, slug, to_version)
         if to_s is None:
+            if slug == "surrey":
+                raise HTTPException(404, detail=_SURREY_ABSENT)
             raise HTTPException(404, detail="snapshot not found")
         if from_version is None:
             from_s = conn.execute("SELECT * FROM snapshots WHERE slug=? AND version<? ORDER BY version DESC LIMIT 1",

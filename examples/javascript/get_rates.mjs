@@ -3,11 +3,12 @@
  * Minimal first request against the Municipal DCC Data API (Node 18+).
  *
  *   node examples/javascript/get_rates.mjs
- *   BASE_URL=http://127.0.0.1:8080 DCC_API_KEY=dcc_... node examples/javascript/get_rates.mjs
+ *   DCC_API_KEY=dcc_... node examples/javascript/get_rates.mjs
+ *   BASE_URL=http://127.0.0.1:8080 node examples/javascript/get_rates.mjs
  *
  * If DCC_API_KEY is unset, a free key is created (POST /v1/keys) and printed — save it.
  */
-const BASE_URL = (process.env.BASE_URL || "http://127.0.0.1:8080").replace(/\/$/, "");
+const BASE_URL = (process.env.BASE_URL || "https://municipal-dcc-api.onrender.com").replace(/\/$/, "");
 let API_KEY = process.env.DCC_API_KEY;
 
 async function get(path, params) {

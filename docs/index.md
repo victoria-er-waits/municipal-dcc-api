@@ -4,8 +4,12 @@
 
 This MVP exposes read-only rate and change data for **Surrey** and **Victoria** (British Columbia), with every value traceable to a bylaw PDF, URL, effective date, and normalization rules.
 
-**Base URL (public):** `https://municipal-dcc-api.onrender.com`  
-**Base URL (local):** `http://127.0.0.1:8080`  
+**Free (this repo and the hosted API):** Victoria current rates.  
+**Paid (hosted API only):** Surrey current rates, `/changes`, and (Pro) history. The Surrey schedule is **not** in the public git tree. A checkout can run the API and call Victoria. It cannot rebuild Surrey.
+
+**Base URL (hosted):** `https://municipal-dcc-api.onrender.com`  
+**Interactive docs:** `https://municipal-dcc-api.onrender.com/docs`  
+**Base URL (optional local run):** `http://127.0.0.1:8080` — Victoria only, unless you are the operator and mounted a private rate database.  
 **Authentication:** API key (`X-API-Key: dcc_…` or `Authorization: Bearer dcc_…`) for `/rates` and `/changes`. Free keys are instant: `POST /v1/keys`. See [Plans & pricing](#plans--pricing).
 
 ---
@@ -20,7 +24,7 @@ Credibility comes from honesty about municipal source documents — not from pre
 4. **Every value carries provenance** — bylaw id, source document, source URL, source version date, effective date, last-checked timestamp, extracted token, and normalization rules. Use those fields; do not strip them in downstream products.
 5. **Victoria `/changes` includes labelled demo diffs.** The prior snapshot is synthetic so the change detector has something to show. Each such row has `demo_change: true`. Current rates themselves are real bylaw values.
 
-Scope today: **Surrey + Victoria only**. Minimal billing (API keys + Stripe Checkout subscriptions); no dashboards, no extra municipalities.
+Scope today: **Surrey + Victoria only**. Victoria is the public open-core dataset. Surrey is the paid product on the hosted API. Minimal billing (API keys + Stripe Checkout subscriptions); no dashboards, no extra municipalities.
 
 ---
 
@@ -84,10 +88,10 @@ Stripe keys and price IDs are configured by the **server operator** via environm
 
 ## What you get
 
-| Municipality | Bylaw | Rates (approx.) | Retrieval | Provisional? |
-|---|---|---|---|---|
-| Surrey | 21174 | ~826 | Official HTTPS PDF | no |
-| Victoria | 24-053 | 36 | Wayback snapshot of official URL | **yes** |
+| Municipality | Bylaw | Where the rows live | Retrieval | Provisional? | Plan |
+|---|---|---|---|---|---|
+| Victoria | 24-053 | This repo (`data/normalized.json`, `db/dcc.sqlite3`) and the hosted API | Wayback snapshot of official URL | **yes** | Free |
+| Surrey | 21174 | Hosted API operator database only. Official PDF: [BYL_reg_21174.pdf](https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf) | Official HTTPS PDF (not vendored) | no | Starter |
 
 Typical use: feasibility / pro-forma lookups (per-lot, per-dwelling-unit, per-sq.ft., etc.) with component breakdowns (water, sewer, roads, drainage, parks) and a Total DCC.
 
@@ -95,10 +99,13 @@ Typical use: feasibility / pro-forma lookups (per-lot, per-dwelling-unit, per-sq
 
 ## First request (under 5 minutes)
 
-Assuming the API is running locally (see [Run locally](#run-locally)):
+Use the hosted API. Open the interactive docs, create a free key, and read one Victoria rate. You do not need a local checkout for that.
 
 ```bash
-export BASE_URL=http://127.0.0.1:8080
+export BASE_URL=https://municipal-dcc-api.onrender.com
+
+# 0. Interactive docs (Swagger UI)
+#    $BASE_URL/docs
 
 # 1. List municipalities (min_plan: free | starter)
 curl -s "$BASE_URL/municipalities" | python3 -m json.tool
@@ -110,21 +117,23 @@ export DCC_API_KEY=$(curl -s -X POST "$BASE_URL/v1/keys" | python3 -c "import sy
 curl -s -H "X-API-Key: $DCC_API_KEY" \
   "$BASE_URL/rates/victoria?use_type=medium%20density&charge_type=Total%20DCC" | python3 -m json.tool
 
-# 4. Pull one Surrey rate (Starter/Pro; a free key gets 402 + upgrade_url)
+# 4. Surrey with a free key → 402 and an upgrade URL. The body does not include rate rows.
 curl -s -H "X-API-Key: $DCC_API_KEY" \
   "$BASE_URL/rates/surrey?use_type=RF-12&charge_type=Total%20DCC&schedule=B" | python3 -m json.tool
 ```
 
-Or run the bundled scripts:
+The same scripts default to that hosted base URL:
 
 ```bash
 ./examples/curl/quickstart.sh
-./examples/curl/stranger_journey.sh     # full free → 402 → limit → upgrade → paid flow
+./examples/curl/stranger_journey.sh     # free → 402 → limit → upgrade
 python3 examples/python/get_rates.py
 node examples/javascript/get_rates.mjs
 ```
 
-Saved JSON fixtures live in [`examples/sample-responses/`](https://github.com/victoria-er-waits/municipal-dcc-api/tree/main/examples/sample-responses).
+To run against a local Victoria-only server instead: `BASE_URL=http://127.0.0.1:8080` (see [Run locally](#run-locally)). Local Surrey calls 404 until an operator database is mounted; they do not return the paid schedule from git.
+
+Saved JSON fixtures live in [`examples/sample-responses/`](https://github.com/victoria-er-waits/municipal-dcc-api/tree/main/examples/sample-responses). The Surrey success body is intentionally not one of them.
 
 ---
 
@@ -185,7 +194,7 @@ Diff of current vs previous snapshot (Starter), or explicit historical versions 
 
 Each change includes old/new values, delta, effective dates, source URL, and (when applicable) `demo_change` / `demo_note`.
 
-Interactive OpenAPI UI (when the server is up): `http://127.0.0.1:8080/docs`
+Interactive OpenAPI UI: `https://municipal-dcc-api.onrender.com/docs` (local: `http://127.0.0.1:8080/docs`).
 
 ---
 
@@ -230,7 +239,7 @@ Truncated for readability. Full captured samples: [`examples/sample-responses/`]
 {
   "status": "ok",
   "db": "/workspace/municipal-dcc-api/db/dcc.sqlite3",
-  "snapshots": { "surrey": 2, "victoria": 2 },
+  "snapshots": { "victoria": 2 },
   "billing": { "checkout_enabled": false, "webhook_enabled": false }
 }
 ```
@@ -264,58 +273,38 @@ Truncated for readability. Full captured samples: [`examples/sample-responses/`]
 }
 ```
 
-**Surrey RF-12 Total DCC (Schedule B)**
+**Surrey (paid — not in this repository)**
 
-```json
-{
-  "municipality": "Surrey",
-  "provisional": false,
-  "source_retrieval_method": "official_https",
-  "count": 1,
-  "rates": [
-    {
-      "schedule": "B",
-      "use_type": "Single Family Residential — RF, RF-G, RF-SS, RF-12, RF-12C, RF-13",
-      "charge_type": "Total DCC",
-      "rate": 55260.0,
-      "unit_normalized": "per_lot",
-      "quality_flags": [
-        "component_sum_variance: printed total 55260.0 vs component sum 55259.0 (diff 1.0)"
-      ],
-      "provenance": {
-        "bylaw_id": "21174",
-        "source_url": "https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf",
-        "provisional": false
-      }
-    }
-  ]
-}
-```
+A Starter or Pro key on the **hosted** API receives the same shape as Victoria: `provisional: false`, `source_retrieval_method: "official_https"`, and `provenance.bylaw_id` `21174` with `source_url` `https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf`. Dollar amounts are not published in this repo. A free key gets **402** before any row is returned. A public local build has no Surrey snapshot and returns **404** (`Surrey rates are not in this build`).
 
 ---
 
-## Run locally
+## Run locally (Victoria only)
+
+The committed database is the free fixture. `GET /rates/victoria` works. `GET /rates/surrey` returns 404 on this tree (402 if the key is still on the free plan).
 
 ```bash
-git clone <this-repo> municipal-dcc-api
+git clone https://github.com/victoria-er-waits/municipal-dcc-api.git
 cd municipal-dcc-api
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 
 cp .env.example .env   # optional: PUBLIC_BASE_URL, Stripe vars, ADMIN_UNLOCK_TOKEN (dev)
 
-# Option A — use the committed SQLite DB (fastest)
+# Option A — use the committed Victoria SQLite DB (fastest)
 ./scripts/run_api.sh
 # -> http://127.0.0.1:8080
 
-# Option B — rebuild DB from sources + Day 1 normalized data
+# Option B — rebuild the Victoria DB from sources/victoria_dcc_bylaw_24-053.txt
 .venv/bin/python scripts/build_db.py          # omit --live to skip network hash checks
 ./scripts/run_api.sh
 ```
 
 Stop: `pkill -f "uvicorn dcc.api:app"`
 
-Internal Day 1–3 notes (`DAY1_VERIFICATION.md`, `DAY2_3_*.md`) document how the parsers and DB were built; this page is the public surface.
+Operators who need Surrey in a private build: [DEPLOY.md](https://github.com/victoria-er-waits/municipal-dcc-api/blob/main/DEPLOY.md). Do not commit that database.
+
+Internal Day 1–3 notes (`DAY1_VERIFICATION.md`, `DAY2_3_*.md`) describe how the pipeline was built. Surrey dollar figures have been removed from those notes. This page is the public surface.
 
 ---
 
