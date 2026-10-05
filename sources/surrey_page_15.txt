@@ -1,0 +1,37 @@
+Schedule G
+Surrey Development Cost Charge Bylaw, 2024, No. 21174
+West Clayton (Schedule B plus Schedule G)
+Zones and Land Uses
+West Clayton (Schedule B plus this Schedule G) DCC Components
+Units for Each
+No Total
+Column
+Sewer Drainage
+Single Family Residential
+1 RA, RA-G, RH, RH-G, RC (Types I and II), RQ $0 $0 $0 /lot
+2 RF, RF-G, RF-SS, RF-12, RF-12C, RF-13 $0 $0 $0 /lot
+3 RF-10, RF-10S, RF-SD, RM-23 $0 $0 $0 /lot
+4 RM-D $0 $0 $0 /DU (a)
+Multi Family Residential
+5 RM-10, RM-15, RM-30, RC (Type Ill) $0.00 $0.00 $0.00 /sq.ft. of DU (b}
+6 RM-45, RM-70 (except lines 7 & 8) $0.00 $0.00 $0.00 /sq.ft. of DU (c)
+7 RM-45, RM-70 (for Seniors Apartments) $0.00 $0.00 $0.00 /sq.ft. of DU (c)
+8 RM-45, RM-70 (for Assisted Living Residences) $0.00 $0.00 $0.00 /sq.ft. of DU (c)
+9 RMS-1, RMS-2, RMS-1A $0.00 $0.00 $0.00 /sq.ft. of BA
+Commercial Zones
+10 Commercial -Ground floor $0.00 $0.00 $0.00 /sq.ft. of BA (d)
+11 Commercial -All other floors except ground floor $0.00 $0.00 $0.00 /sq.ft. of BA (d)
+12 CPG,CPM,CPR,CCR $0.00 $0.00 $0.00 /sq.ft. of BA
+Dwelling Units in Non Residential
+13 DU in Non Residential Zones $0.00 $0.00 $0.00 /sq.ft. of DU (c)
+Institutional
+14 PA-1, PA-2, PC $0.00 $0.00 $0.00 /sq.ft. of BA (d)
+15 Public & Private Schools (to grade 12) $0.00 $0.00 $0.00 /sq.ft. of BA (d)
+16 Public & Private Schools (Post Secondary) $0.00 $0.00 $0.00 /sq.ft. of BA (d)
+17 Hospitals $0.00 $0.00 $0.00 /sq.ft. of BA (d}
+18 Federal and Provincial Buildings $0.00 $0.00 $0.00 /sq.ft. of BA (d)
+19 Municipal Buildings $0.00 $0.00 $0.00 /sq.ft. of BA
+(a) With an an ultimate of 2 DU per lot.
+(b} To a maximum of $0/DU.
+(c) To a maximum of $0/DU.
+(d) Dwelling Units within Non Residential Zones and Land Uses shall be charged the applicable rate in line 13.

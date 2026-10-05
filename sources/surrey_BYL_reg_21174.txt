@@ -1,0 +1,810 @@
+                                         CITY OF SURREY
+                                         BYLAW NO. 21174
+                           A Bylaw to impose development cost charges.
+
+
+
+
+WHEREAS:
+
+A       Pursuant to Part 14, Division 19 of the Local Government Act, S.B.C 2015, c.1,as amended
+        Development Cost Charge Amendment Bylaw Approval Exemption Regulation, BC
+        Reg 130/2010, and the regulations passed pursuant thereto, the Council of the City of
+        Surrey may, by bylaw, impose development cost charges; and
+
+B.      Development cost charges may be imposed for the purpose of providing funds to assist the
+        City of Surrey to pay the capital costs of providing, constructing, altering or expanding
+        sewage, water, drainage and highway facilities, other than off-street parking facilities, and
+        providing and improving park land to service, directly or indirectly, the development for
+        which the charges are being imposed.
+
+NOW THEREFORE, the Council of the City of Surrey, ENACTS AS FOLLOWS:
+
+
+TITLE
+
+1.      This Bylaw may be cited for all purposes as "Surrey Development Cost Charge Bylaw,
+        2024, No. 21174".
+
+
+DEFINITIONS AND INTERPRETATION
+
+
+2.      For the purposes of this Bylaw, unless the context otherwise requires:
+
+        "Anniedale-Tynehead" means the area of the City of Surrey shown in Section E.27(a) of
+        Schedule "G" of the Surrey Zoning Bylaw;
+
+        "Assisted Living Residence" means a multiple unit residential building containing
+        45 Dwelling Units per acre or greater which is subject to a housing agreement pursuant to
+        Section 483 of the Local Government Act, as amended, between the City of Surrey and the
+        owner of the building, but does not include Not-for-Profit Rental Housing. The housing
+        agreement will specify that the multiple unit residential building will:
+
+        (a)    be occupied only by persons who are Qualified Occupants;
+        (b)    be registered as an Assisted Living Residence under the Community Care and
+               Assisted Living Act, S.B.C. 2002, c. 75, as amended; and
+        (c)    not be strata-titled or further subdivided;
+
+        "BA" or "Building Area" means building area as defined by the total sum of all floor areas
+        enclosed or partially enclosed by the exterior perimeter of a building or structure
+including without limitation stairways, elevator shafts, storage rooms, mechanical rooms
+and basements, and excluding areas for parking that are provided as an accessory use to
+the building or structure;
+
+"Bylaw 5942" means Surrey Zoning By-law, 1979, No. 5942 as amended;
+
+"Campbell Heights" means the area of the City of Surrey shown in Section E.17(a) of
+Schedule "G" of the Surrey Zoning Bylaw;
+
+"City Centre" means the area of the City of Surrey shown in Schedule E.3o(a) of the
+Surrey Zoning Bylaw;
+
+"Community Charter" means the Community Charter, SBC 2003, c.26, as amended;
+
+"Completed" means, in the case of a subdivision, an application for which the servicing
+agreement is completed and signed, appropriate zoning is in place, all applicable fees and
+levies are paid, all conditions of approval are fulfilled, and the final plan of subdivision is
+ready for approval by the approving officer;
+
+"Darts Hill" means the area of the City of Surrey shown in Section E.35(a) of Schedule "G"
+of the Surrey Zoning Bylaw;
+
+"Developed Area" means that area of a lot containing any improvements for the
+accommodation of a building, accessory building, structure, storage or parking or
+circulation area, landscaping or anything to facilitate the permitted use;
+
+"DU" or "Dwelling Unit" means dwelling unit as defined in the Surrey Zoning Bylaw;
+
+"Effective Date" means the date on which this bylaw comes into force, which is
+established as May 15, 2024;
+
+"Eligible Development" means a development that is eligible in accordance with 563 of
+the Local Government Act for a rental housing development operated by public housing
+bodies prescribed in the Residential Tenancy Act and Regulations if the units are subject
+to a legal agreement securing rental tenure for a minimum period of 60 years, as
+accepted by the City, and is either:
+
+(a)    wholly owned and operated by a public housing body; or
+(b)    operated by a public housing body, pursuant to a legal agreement with the
+       property owner;
+
+"Federal and Provincial Buildings" means buildings or lots owned by the Provincial or
+Federal government for use by the Provincial or Federal government or crown
+corporations, excluding a Hospital operating under Federal or Provincial legislation,
+located in any zone;
+
+"Highway 99 Corridor" means the area of the City of Surrey shown in Section E.20(a) of
+Schedule "G" of the Surrey Zoning Bylaw;
+
+"Hospital" means a hospital, a private hospital, and/or a licensed community care facility
+as defined under the Hospital Act, R.S.B.C. 1996, c. 200, as amended, and a private mental
+hospital as defined under the Mental Health Act, R.S.B.C. 1996, c. 288, as amended;
+
+"In-Stream" means, in reference to an application, not determined, rejected or withdrawn
+and:
+
+(a)    in the case of an application for subdivision, one for which the application form
+       has been submitted, the application fees have been paid, and all supporting
+       documentation required by the City of Surrey has been submitted and accepted by
+       the City of Surrey as a legitimate application;
+(b)    in the case of an application for building permit, one for which the application
+       form has been submitted, the application fees have been paid, and all supporting
+       documentation required by the City of Surrey including without limitation all
+       applicable architectural, structural, plumbing, electrical, mechanical and site
+       drainage drawings has been submitted and accepted by the City of Surrey as a
+       legitimate application;
+(c)    in the case of a rezoning application, one for which the application form has been
+       submitted, the application fees have been paid, and all supporting documentation
+       required by the City of Surrey has been submitted and accepted by the City of
+       Surrey as a legitimate application; and
+(d)    in the case of an application for development permit, one for which theapplication
+       form has been submitted, the application fees have been paid, and all supporting
+       documentation required by the City of Surrey has been submitted and accepted by
+       the City of Surrey as a legitimate application;
+
+"Issuable" means, in the case of a building permit, an application which meets the
+requirements of an In-Stream application and for which:
+
+(a)     Council has approved any applicable rezoning and/or development permit and/or
+        development variance permit;
+(b)     all required off-site legal encumbrances relating to engineering services have been
+        registered at the Land Title Office on title to the lot;
+(c)     any plan, including a plan of subdivision, consolidation, or road dedication, that
+        would affect the legal description of the lot has been registered at the Land Title
+        Office on title to the lot;
+(d)     all review comments arising from the building permit application reviewprocess
+        have been addressed to the satisfaction of the City of Surrey; and
+(e)     all applicable fees and levies have been paid;
+
+"Local Government Act" means Local Government Act, SBC 2015, c. 1, as amended;
+
+"Minor Change" means a change to the scope of work authorized by a building permit
+which results in an increase of five percent (5%) or less in the cumulative total Square
+Footage of the Dwelling Unit, the Building Area, the number of Dwelling Units within a
+building or on a lot, or the Developed Area of a lot;
+"Precursor Application" means, in relation to a building permit, that there is an:
+
+(a)    In-Stream development permit application and that the development authorized
+       by the building permit is entirely within the area of land that is the subject ofthe
+       application; or
+(6)    In-Stream rezoning application and that the development authorized by the
+       building permit is entirely within the area of land to which the application relates;
+
+"Qualified Occupants" means:
+
+(a)    a person who is a resident as defined under the Community Care and Assisted
+       Living Act, SBC 2002, c. 75, as amended; and
+(b)    a person who is employed to manage the Assisted Living Residence and their
+       spouse, provided only one Dwelling Unit within the Assisted Living Residence is
+       designated for this type of occupant;
+
+"Redwood Heights" means the area of the City of Surrey shown in Section E.33(a) of
+Schedule "G" of the Surrey Zoning Bylaw;
+
+"Revision Permit" means a revised building permit issued by the City of Surrey where the
+City of Surrey has accepted a proposed change to the scope of work originally authorized
+by a building permit;
+
+"Seniors Apartments" means a multiple unit residential building with a minimum
+density of 45 Dwelling Units per acre and where there exists a housing agreement
+pursuant to Section 483 of the Local Government Act, as amended , between the
+City of Surrey and the owner specifying that the multiple unit residential building will be
+restricted to seniors, but does not include Not-for-Profit Rental Housing;
+
+"Square Footage of the Dwelling Unit" or "sq. ft. of DU" means the cumulative floor
+area measured from the outside edge of the exterior walls or sheathing of the Dwelling
+Unit and, where applicable, the centre line of the common walls dividing the Dwelling
+Units and shall include all the internal walls within each Dwelling Unit excluding parking
+areas (to a maximum of 250 square feet per parking space), crawl spaces less than or equal
+to 1.5 metres [5 ft.] clear height, balconies, canopies, terraces and sun decks;
+     "Substantial Change" means a change to the scope of work authorized by a building
+     permit which results in either:
+
+     (a)    an increase by more than five percent (5%) in the cumulative total Square Footage
+            of the Dwelling Unit, the Building Area, the number of Dwelling Units within a
+            building or on a lot, or the Developed Area of a lot; or
+     (b)    a change to the zone or land use on which the development cost charges was
+            based, as determined by the City of Surrey;
+
+     "Surrey Zoning Bylaw" means Surrey Zoning By-law, 1993, No. 12000, as amended; and
+
+     "West Clayton" means the area of the City of Surrey shown in Section E.29(a) of Schedule
+     "G" of the Surrey Zoning Bylaw.
+
+3.   Words not specifically defined in this Bylaw shall have the same meaning as defined in
+     Surrey Zoning Bylaw.
+
+4.   If any section, clause or phrase of this Bylaw is held to be invalid by a court ofcompetent
+     jurisdiction, the invalid portion shall be severed and the remainder of the Bylaw shall be
+     deemed to have been enacted without the invalid portion.
+
+DEVELOPMENT COST CHARGES
+
+5.   Every person who obtains: approval of a subdivision; or a building permit authorizing
+     the construction, alteration or extension of a building or structure shall pay to the City of
+     Surrey the development cost charges in the amounts set out in this Bylaw including all
+     Schedule(s) as follows:
+
+     (a)    Schedule B - City Wide
+
+     INCLUDING:
+     City Centre (Schedule B plus Schedule C); and
+     West Clayton (Schedule B plus Schedule G).
+
+     EXCEPT:
+     Anniedale-Tynehead (Only Schedule D); Redwood Heights (Only Schedule E);
+     and Darts Hill (Only Schedule F).
+
+     (b)    Schedule C - City Centre (Schedule B plus Schedule C);
+     (c)    Schedule D -Anniedale-Tynehead;
+     (d)    Schedule E - Redwood Heights;
+     (e)    Schedule F - Darts Hill; and
+     (f)    Schedule G - West Clayton (Schedule B plus Schedule G).
+
+6.   The list of zones set out in Schedule A of this Bylaw include zones in both the Surrey
+     Zoning Bylaw and Bylaw 5942. The development cost charges payable for any zones where
+     Bylaw 5942 is applicable are determined by referring to its equivalent zone in the "Bylaw
+     12000 Zone" column in Schedule A.
+
+7.   Development cost charges shall be payable at the time specified below:
+
+     (a)   after application for a subdivision has been submitted, but before the approval of
+            the subdivision and the subdivision plan has been executed by the approving
+            officer, for agricultural, single family and single family with a secondary suite land
+            use, or all zones and land uses within Campbell Heights; and
+
+      (b)   for all cases other than those described in clause 6(a) and clause 6(b ), after
+            application for a building permit has been submitted, but before the building
+            permit has been issued.
+
+EXEMPTIONS
+
+8.    Development cost charges are not payable if any of the following applies in relation to a
+      development authorized by a building permit:
+
+      (a)    the value of the work authorized by the permit does not exceed $100,000;
+      (b)    the size of the Dwelling Unit is no greater than 312.2 ft 2 [29 m 2 ]; and
+      (c)    the permit authorizes the construction, alteration or extension of a building or
+             part of a building that is, or will be, after the construction, alteration or extension,
+             used for an Eligible Development.
+
+MIXED USE AND COMPREHENSIVE DEVELOPMENTS
+
+9.    For mixed use developments, the development cost charges payable shall be calculated
+      separately for each portion of the development contained in the building permit or
+      subdivision application in accordance with the zones and land uses identified in the
+      applicable Schedule(s). The total payable will be the sum of the development cost charges
+      for each portion of the development.
+
+10.   Development cost charges payable for comprehensive development zones shall be
+      calculated as specified in the applicable comprehensive development zone amendment to
+      Surrey Zoning Bylaw.
+
+CHANGES TO WORK AUTHORIZED BY A BUILDING PERMIT
+
+11.   If a Minor Change to a building permit is proposed, the development cost charges will be
+      recalculated based on the increase in Building Area, Developed Area, or Dwelling Units
+      (as applicable) using the rates in the Surrey Development Cost Charge Bylaw in effect at
+      the time of issuance of the Revision Permit. The difference between the original
+      development cost charges amount and the recalculated development cost charges
+      amount shall be paid to the City of Surrey prior to the issuance of the Revision Permit.
+12.   If a Substantial Change to a building permit is proposed, the development cost charges
+      will be recalculated on the entire project at the rates in the Surrey Development Cost
+      Charge Bylaw in effect at the time of issuance of the Revision Permit. The difference
+      between the original development cost charges amount and the recalculated
+      development cost charges amount shall be paid to the City of Surrey prior to the issuance
+      of the Revision Permit.
+
+EFFECTIVE DATE AND TRANSITIONAL PROVISIONS
+
+13.   This Bylaw will come into force on the Effective Date.
+
+14.   Surrey Development Cost Charge Bylaw, 2023, No. 20865 and all amendments thereto,is
+      hereby repealed except in the case of:
+
+       (a)   applications for subdivision of lots that are In-Stream on the Effective Date and
+             which are Completed within one year of the Effective Date;
+       (b)   building permits that are In-Stream on the Effective Date and which are Issuable
+             within one year of the Effective Date; and
+       (c)   building permits on lots with a Precursor Application In-Stream on the Effective
+             Date and where the related building permit is Issuable within one year of the
+             Effective Date.
+
+      in which case Surrey Development Cost Charge Bylaw, 2024, No. 21174, and all amendments
+      thereto, shall apply. Surrey Development Cost Charge Bylaw, 2023, No. 20865, and all
+      amendments thereto, shall be wholly repealed one year from the Effective Date.
+
+PASSED FIRST READING on the 26th day of February, 2024.
+
+PASSED SECOND READING on the 26th day of February, 2024.
+
+PASSED THIRD READING, as amended on the 8th day of April, 2024.
+
+APPROVED BY THE DEPUTY INSPECTOR OF MUNICIPALITIES on the 26th day of April, 2024.
+
+
+RECONSIDERED AND FINALLY ADOPTED, signed by the Mayor and Clerk, and sealed with the
+Corporate Seal on the 6th day of May, 2024.
+
+
+
+
+                                               ~                            )        MAYOR
+
+
+
+                                                   d-+--+    _\J_O _~- -
+                                                       g +-'--
+                                                          .~            - ,_ _ _ CLERK
+                                                          SCHEDULE "A"
+
+                                                          LIST OF ZONES
+
+                                           SURREY ZONING BYLAWS 12000 AND 5942
+
+
+                                                                                          Bylaw
+                                                                    Bylaw12000
+                                        Name of Zone                                      594 2
+                                                                       Zone
+                                                                                          Zone
+Residential Zones     General Agriculture                           A-1          A-1,A-3
+                      Intensive Agriculture                         A-2          A-2
+                      One-Acre Residential                          RA           RS
+                      Acreage Residential Gross Density             RA-G         R-A(G)
+                      Half-Acre Residential                         RH           R-1
+                      Half-Acre Residential Gross Density           RH-G         R-H(G)
+                      Single Family Residential                     RF           R-F, R-F(R), R-F(F)
+                      Single Family Residential Secondary Suite     RF-SS        RF-SS, RFR-SS
+                      Single Family Residential Gross Density       RF-G         R-F(C)
+                      Duplex Residential                            RM-D         R-F(D)
+                      Manufactured Home Residential                 RM-M         R-F(M), CT(2)
+                      Multiple Residential 15                       RM-15        RT-1
+                      Multiple Residential 30                       RM-30        RM-1
+                      Multiple Residential 45                       RM-45        RM-2
+                      Multiple Residential 70                       RM-70        RM-3
+                      Multiple Residential Commercial 150           RMC-150      RM-4
+                      Special Care Housing 1                        RMS-1        P-P, P-P(2)
+                      Special Care Housing 2                        RMS-2        P-P, P-P(2)
+Institutional Zones
+                      Cemetery                                      PC           P-C
+                      Assembly Hall 1                               PA-1         P-A
+                      Assembly Hall 2                               PA-2         P-A
+                                                        SCHEDULE "A"
+
+                                                   LIST OF ZONES continued
+
+                                        SURREY ZONING BYLAWS 12000 AND 5942
+
+
+                                                                                          Bylaw
+                                                                  Bylaw12000
+                                     Name of Zone                                         5942
+                                                                     Zone
+                                                                                          Zone
+Commercial Zones
+                   Local Commercial                               C-4          C-L
+                   Community Commercial                           C-8          C-S
+                   Town Centre Commercial                         C-15         CR-1, CR-2, CR-3, CR-4
+                   Downtown Commercial                            C-35         C-C
+                   Highway Commercial Industrial                  CHI          C-H, I-S
+                   Self-Service Gasoline Station                  CG-1         C-G(1)
+                   Combined Service Gasoline Station              CG-2         C-G(2) , CG
+                   Tourist Accommodation                          CTA          C-T(1), C-T(2)
+                   Child Care                                     CCR          P-P(1)
+                   Commercial Recreation                          CPR          P-R, P-D
+                   Golf Course                                    CPG          P-R
+                   Marina                                         CPM          P-R
+Industrial Zones   Business Park                                  IB, IB-3     I-1, I-P(2) , I-G, I-4
+                   Light Impact Industrial                        IL           I-G, I-S, I-T, I-W
+                   High Impact Industrial                         IH           I-H, I-W
+                   Salvage Industrial                             IS           I-L(S)
+                   Agro-Industrial                                IA           I-A
+
+Comprehensive      Comprehensive Development                      CD           C-D
+Development Zone
+                                                                                                              Schedule B
+
+                                                                       Surrey Development Cost Charge Bylaw, 2024, No. 21174
+
+                                                                         CITYWIDE
+                              INCLUDING: City Centre (Schedule B plus Schedule C) and West Clayton (Schedule B plus Schedule G)
+
+                 EXCEPT: Annidale-Tynehead (Only Schedule D), Redwood Heights (Only Schedule E), and Darts Hill (Only Schedule F)
+
+         Zones and Land Uses
+         City Wide including                                                                                                                 DCC Components
+         City Centre (This Schedule B plus Schedule C)                                                                                                                                                    Units for Each
+    No   and West Clayton (This Schedule 8 plus Schedule G)                                                                                                               Parkland          Total
+                                                                                                                                    Arterial        Collector                                                Column
+                                                                                                       Water          Sewer                                     Drainage Acquisition
+                                                                                                                                    Roads            Roads                     {il
+
+          Agricultural
+    1    A-1 A-2                                                                                           $0            $0             $0             $0          $0          $0             $0        not
+
+          Single Family Residential
+   2    RA RA-G RH RH -G RC rTv □ es I and Ill. RF-O RO                                                 $3 520        $5451         $21 494          $5019       $7 309     $7 948         $50 741      not
+,._3_ , RF RF-G RF-SS RF-12 RF-12C RF-13                                                                $3 404        $5 270        $21494           $5 019      $4177      $15 895        $55260       not      .....   --
+   4
+   5
+        RF-10 RF-10S RF-9 RF-9C RF-9S RF-SD RM -23
+        RM-D
+                                                                                                        $3101
+                                                                                                        $3101
+                                                                                                                      $4 801
+                                                                                                                      $4 801
+                                                                                                                                    $19 573
+                                                                                                                                    $19 573
+                                                                                                                                                     $4 570
+                                                                                                                                                     $4 570
+                                                                                                                                                                 $2 464
+                                                                                                                                                                 $2464
+                                                                                                                                                                            $14 474
+                                                                                                                                                                            $14 474
+                                                                                                                                                                                           $48 983
+                                                                                                                                                                                           $48 983
+                                                                                                                                                                                                       "~ot
+                                                                                                                                                                                                       _£DU(~_               --
+   6    RM -M                                                                                           $1 702        $2636         $9 808           $2 290       $919      $14 474        $31 829      /oad or/DU
+
+
+          Multi Family Residential
+    7    RM-10 RM-15 RM-30 RC /Tvoe llll /exceot line 8)                                                 $1,39         $2.14          $8.08           $1.89       $1.56     $14.57          $29.63     /so.ft. of DU /bl
+     8   RM-30 /in Citv Centre)                                                                          $1.39         $2.14          $8.08           $1.89       $1.56     $14.57          $29.63     /so.ft. of DU (bl
+    9    RM-45 RM-70 (exceot lines 10 1112 & 13)                                                         $1.79         $2.77         $10.51           $2.45       $1.10     $14.84          $33.47     /so.ft. of DU /cl
+    10   RM-45 RM -70 /Seniors Aoartments not in Citv Centrel                                            $2.00         $3.10          $6.84           $1.60       $1.23     $16.59          $31.36     /so.ft. of DU(,:)_
+    11   RM-45 RM -70 (Assisted Livina Residences)                                                       $2.00         $3.10          $6.84           $1.60       $1.23      $5.53          $20.30     /so.ft. of DU (2L ...._
+1    2 - RM-45 RM -70 /in Citv Centre exceot lines 11 & 13)                                              $2.00         $3.10          $7.48           $1.74       $1.23      $8.84          $24.40     /so.ft. of DU fdl
+    13 . RM-45 RM-70 /Seniors Aoartments in City Centre)                                                 $2.00         $3,10         $6.84            $1.60       $1.23      $8.84          $23.61     /so.ft. of DU (dl
+    14   RM-135 RMC-135 RMC-150 /exceot lines 15 16 & 17)                                                $1.91         $2.95          $9,35           $2.18       $0.48     $16.31          $33.18     /so.ft. of DU /el
+    15   RM-135, RMC-13~_RMC-150 fSeniors Aoartments not in Citv Centrel                                 $1 .91        $2.95         $7.01            $1 .64      $0.48     $16.31          $30.30     ~.ft. of DU (e)
+    16   RM-135, RMC-135, RMC-150 (Assisted Livina Residences)                                           $1,91         $2.95         $7.01            $1 .64      $0.48      $5.43          $19.42     /~.ft.o_f DU (e)
+    17   RM-135 RMC-135 RMC-150 /in Citv Centre exceot line 161                                          $1.91         $2.95         $5.97            $1.40       $0.48      $8.64          $21.34     /so.ft. of DU ffl
+    18   RMS-1 RMS-2 RMS-1A                                                                              $0.81         $1.20          $1.64           $0.39       $1.04      $0.00           $5.08     /so.ft. of BA
+
+          Commercial Zones excluding CTA, CPG, CPM, CPR, and
+          CCR (except for lines 33, 34, 35 & 36)
+
+    19    Commercial - Ground fioor                                                                      $0.81         $1 .20         $7.99           $1 .87      $2.71      $0,00          ~ /s_q.ft. gt BA (g)
+    20    Commercial : All.other fioors except around fioor                                              $0.81         $1.20          $5.04           $1.18       $0.54      $0.00          $8.77       /so.ft. of BA /oL _
+
+          CTA, CPG, CPM, CPR, and CCR (except lines 33, 34, 35
+          &36)
+
+    21    CTA                                                                                           $1 220        $1 804         $4 902          $1147        $920         $0           $9 994      /cad /hl
+    22    CPG, CPM, CPR,,J:CR                                                                            $0.88         $1 .20         $6.35          $1.48        $1 .63       $0           $11.54      /sq.ft. of BA
+
+
+          Dwelling Units in Non Residential
+    23    DU in Non Residential Zones /excludino line 24)                                                $1 .79        $2.77         $10.51           $2.45       $1 .10    $14.84          $33.47      /so.ft. of DU (Cl
+    24    DU in Non Residential Zone~U!l.9!Y. Centrel                                                    $2.00         $3.10          $7.48           $1.74       $1.23      $8.84          $24.40      /sq.ft. of DU (d)
+
+          Industrial (except lines except for lines 33, 34, 35 & 36)
+
+    25   All Industrial Zones & Land Uses - Develooed Area                                              $7771         $12 033       $43 046          $10 052     $35 503      $0           $10MQ.6      /acre (g)
+    26   All lndustriai'Zones & Land Uses - All other fioors                                            $0.19          $0.28         $0.63            $0.15       $0.16       $0            $1.4_0      /s_q.ft. of BA (g)
+
+
+          Institutional (except lines except lines 33, 34, 35 & 36)
+    27   PA-1 , PA-2, PC                                                                                 $0.88         $1.20          $0.00           $0.00       $1 .63     $0.00          $3.71       /sq.ft. of BA (g)
+    28   P...l!~L~ Priva_te Schools (!Q_grade 12)                                                        $0.88         $1 .20         $0.00           $0.00       $1 .63     $0.00          $3:h        /sq.ft. of BA (g)
+    29   Public & Private Schools /Post Secondarvl                                                       $0.88         $1.20          $5.09           $1.19       $1.63      $0.00          $9,98       /SQ.ft. of BA (91__
+    30    Hos □ itals                                                                                    $0.88         $1 .20         $2,54           $0,59       $1.63      $0.00          $6.85       Isa.ft. of BA /g_L_
+    31    Federal and Provincial Buildinos                                                               $0.88         $1 .20         $5.00           $1.17       $0.54      $0.00          $8.78       /so.ft. of BA (g)
+    32    Municipal Buildinas                                                                            $0.00         $0.00          $0.00           $0.00       $0.00      $0.00          $0.00       /so.ft. of BA l9) · -
+
+          Highway 99 Corridor
+    33   All Commercial Zones & Land Uses                                                              $20 386        $28 580      $178 587          $60 337       $0       $11 819        $299 709     /acre(gL _ .. ,
+    34   All Industrial Zones & Land Uses                                                              $20 386        $28 580       $52 525          $17 746       $0       $11,.!11]1__   $131 ,057    /acre (g)_ _ _ _
+    35   Municioal Buildinas                                                                            $0.00          $0.00         $0.00            $0.00       $0.00      $0.00           $0.00      /so.ft. of BA
+    36   All Other Zones and Land Uses fhl                                                              $0.00          $0.00         $0.00            $0.00       $0.00      $0.00           $0.00     J!:!l
+          Campbell Heights
+    37   All Commercial Industrial Zones & Land Uses                                                   $22159         $4405        $126 469          $23 395     $7 404       $0           $183 832     /acre/gL _ _
+    38   Municioal Buildinas                                                                            $0.00         $0.00          $0.00            $0.00       $0.00      $0.00           $0.00      /so.ft. of BA
+
+
+         {a) With a maximum of 2 DU per lot.
+         (b) To a maximum of 551,847/DU.
+         (c) To a maximum of S45, 191,0U.
+         {d) To a maximum or $32,933/0U.
+         (e) To a maximum of S41,473/0U.
+         (f} To a maximum of S26.675/DU.
+         (g) Dwelling Units within Non Residential Zones and Land Uses shall be charged the applicable rates in line 23 and 24 .
+         (h) Rate lo be charged per trailer pad or camping site In addition to rates of lines 19 and 20 for BA of any building.
+         (i) For rrne 36, refer to the appUcable Zone and Land Use In Schedule B.
+         (J) Parkland Acquisition rates include Biodiversity Conservation Strategy r ecs") Green Infrastructure Network rGIN~) land acquisitions.
+                                                 Schedule C
+                           Surrey Development Cost Charge Bylaw, 2024, No. 21174
+
+
+                           City Centre (Schedule 8 plus Schedule C)
+     Zones and Land Uses
+     City Centre (Schedule B plus this Schedule D)                    DCC Component
+                                                                                                          Units for Each
+No                                                                                            Total
+                                                                         Property                            Column
+                                                                       Acquisition for
+                                                                       Road Network
+
+     Multi Family Residential
+
+1    RM-10, RM-15, RM-30, RC (Type Ill)                                     $3.55             $3.55     /sq .ft. of DU (a)
+2    RM-45 , RM-70                                                          $3.28             $3.28     /sq.ft. of DU (b)
+3    RM-135 , RMC-135 , RMC-150                                             $2.62             $2.62     /sq .ft. of DU (c)
+
+
+
+     Commercial Zones
+
+4    Commercial - Ground floor                                              $3.51             $3.51     /sq .ft. of BA (d)
+5    Commercial - All other floors except ground floor                      $2.21             $2.21     /sq.ft. of BA (d)
+
+
+
+     Dwelling Units in Non Residential
+
+6    DU in Non Residential Zones                                            $3.28             $3.28     /sq .ft. of DU (b)
+
+
+
+     Institutional
+
+7    Public & Private Schools (Post Secondary)                              $2.23             $2.23     /sq.ft. of BA (d)
+8    Hospitals                                                              $1 .12            $1.12     /sq .ft. of BA (d)
+9    Federal and Provincial Buildings                                       $2.19             $2.19     /sq.ft. of BA (d)
+10   Municipal Buildings                                                    $0.00             $0.00     /sq .ft. of BA
+
+
+
+
+     (a) To a maximum of $6,213/DU .
+     (b) To a maximum of $4,428/DU .
+     (c) To a maximum of $3,275/DU .
+     (d) Dwelling Units within Non Residential Zones and Land Uses shall be charged the applicable rate in line 6.
+                                                                                              Schedule D
+
+                                                                     Surrey Development Cost Charge Bylaw, 2024, No. 21174
+
+
+                                                                                              Anniedale-Tynehead
+
+     Zones and Land Uses
+     Anniedale-Tynehead (Only this Schedule E)                                                                         DCC Components
+                                                                                                                                                                             Units for Each
+No                                                                                                                                                                 Total
+                                                                                                                Arterial     Collector               Parkland                   Column
+                                                                                   Water          Sewer                                  Drainage
+                                                                                                                Roads         Roads                 Acquisition
+
+     Agricultural
+1    A-1,A-2                                                                          $0             $0             $0          $0          $0          $0           $0      /lot
+
+
+     Single Family Residential
+2    RA, RA-G, RH, RH -G, RC (Types I and II), RF-O, RO                             $3,821         $6,463        $24,531      $5,541      $10,874     $4,704      $55,935    /lot
+3    RF, RF-G, RF-SS, RF-12, RF-12C, RF-13                                          $3,821         $6,463        $24,531      $5,541      $6,214      $9,410      $55,981    /lot
+4    RF-10, RF-10S , RF-9, RF-9C, RF-9S, RF-SD, RM-23                               $3,444         $5,825        $22,324      $5,043      $3,666      $8,563      $48,866    /lot
+5    RM-D                                                                           $3,444         $5,825        $22,324      $5,043      $3,666      $8,563      $48,866    /DU (a)
+6    RM-M                                                                           $2,441         $4,129        $13,247      $2,992      $1,367      $8,563      $32,740    /pad or /DU
+
+
+     Multi Family Residential
+7    RM-10, RM-15, RM-30, RC (Type Ill)                                             $2.15           $3.63         $10.47       $2.37       $2.40       $9.78       $30.80    /sq.ft. of DU (b)
+8    RM-45, RM -70 (except lines 9 & 10)                                            $2.44           $4.13         $13.50       $3.05       $1 .55      $9.89       $34.55    /sq.ft. of DU (c)
+9    RM-45, RM-70 (for Seniors Apartments )                                         $2.44           $4.13          $7.85       $1 .77      $1.55       $9.89       $27.64    /sq.ft. of DU (c)
+10   RM-45, RM-70 (for Assisted Living Residences)                                  $2.44           $4.13          $7.85       $1.77       $1.55       $3.30       $21 .05   /sq.ft. of DU (c)
+11   RM-135, RMC-135, RMC-150 (except lines 12 & 13)                                $2.35           $3.97         $10.15       $2.29       $0.57       $8.00       $27.33    /sq.ft. of DU (d)
+
+12   RM-1 35, RMC-135, RMC-150 (for Seniors Apartments)                             $2.35           $3.97          $7.61       $1.72       $0.57       $8.00       $24.22    /sq.ft. of DU (d)
+
+13   RM-1 35, RMC-135, RMC-150 (Assisted Living Residences )                        $2.35           $3.97          $7.61       $1.72       $0.57       $2.67       $18.90    /sq.ft. of DU (d)
+
+14   RMS-1 , RMS-2, RMS-1A                                                          $1.18           $1.99          $2.21       $0.50       $1.55       $0.00       $7.44     /sq.ft. of BA
+
+     Commercial Zones excluding CTA, CPG, CPM, CPR,
+     and CCR
+15   Commercial - Ground floor                                                      $1.18           $1 .99        $10.80       $2.44       $4.04       $0.00       $20.44    /sq.ft. of BA (e)
+16   Commercial -All other floors except ground floor                               $1.18           $1.99          $6.81       $1.53       $0.80       $0.00       $12.32    /sq.ft. of BA (e)
+
+
+     CTA, CPG , CPM CPR , and CCR
+17   CTA                                                                            $1 ,773        $2,993         $6,623      $1,491      $1,366        $0        $14,247    /pad (f)
+18   CPG, CPM, CPR, CCR                                                              $1.29          $1.99          $8.58       $1.94       $2.42       $0.00       $16.23    /sq.ft. of BA
+
+
+     Dwelling Units in Non Residential
+19   DU in Non Residential Zones                                                    $2.44           $4.13         $13.50       $3.05       $1.55       $9.89       $34.55    /sq.ft. of DU (c)
+
+
+     Industrial
+20   All Industrial Zones & Land Uses - Developed Area                             $11,793        $19,948        $79,728      $18,008     $52,818       $0        $182,296   /acre (e)
+21   All Industrial Zones & Land Uses - All other floors                            $0.27           $0.46          $0.83       $0.19       $0.24       $0.00       $1.99     /sq.ft. of BA (e)
+
+
+     Institutional
+22   PA-1, PA-2, PC                                                                 $1.29           $1.99          $0.00       $0.00       $2.42       $0.00       $5.71     /sq.ft. of BA (e)
+23   Public & Private Schools (to grade 12)                                         $1.29           $1.99          $0.00       $0.00       $2.42       $0.00       $5.71     /sq.ft. of BA (e)
+24   Public & Private Schools (Post Secondary)                                      $1.29           $1.99          $6.87       $1.55       $2.42       $0.00       $14.13    /sq.ft. of BA (e)
+25   Hospitals                                                                       $1 .29         $1 .99         $3.43       $0.77       $2.42       $0.00       $9.91     /sq.ft. of BA (e)
+26   Federal and Provincial Buildings                                               $1.29           $1.99          $6.75       $1.52       $0.80       $0.00       $12.36    /sq.ft. of BA (e)
+27   Municipal Buildings                                                             $0.00          $0.00          $0.00       $0.00       $0.00       $0.00       $0.00     /sq.ft. of BA
+
+
+
+     (a) With a maximum of 2 DU per lot.
+     (b) To a maximum of $53,895/DU.
+     (c) To a maximum of $46,648/DU.
+     (d) To a maximum of $34, 166/DU.
+     (e) Dwelling Units within Non Residential Zones and Land Uses shall be charged the applicable rate in line 19.
+     (f) Rate to be charged per trailer pad or camping site in addition to rate of lines 15 and 16 for BA of any building.
+                                                                                                          Schedule E
+                                                                          Surrey Development Cost Charge Bylaw, 2024, No. 21174
+
+                                                                                                   Redwood Heights
+
+     Zones and Land Uses
+     Redwood Heights (Only this Schedule F)                                                                              DCC Components
+                                                                                                                                                                                   Units for Each
+No                                                                                                                                                                      Total
+                                                                                                                    Arterial       Collector               Parkland                   Column
+                                                                                   Water           Sewer                                       Drainage
+                                                                                                                    Roads           Roads                 Acquisition
+
+     Agricultural
+1    A-1 , A-2                                                                        so             $0                 $0            $0          $0          $0          $0       /lot
+
+
+     Single Family Residential
+2    RA, RA-G, RH, RH-G, RC (Types I and II), RF-O, RQ                             $5,703          $5,511           $2 1,494        $5,019      $7,623      $26,587     $71,938    /lot
+3    RF, RF-G, RF-SS, RF-12, RF-12C, RF-13                                         $5,520          $5,333           $21,494         $5,019      $4,357      $32,473     $74,195    /lot
+4    RF-10, RF-1 0S, RF-9, RF-9C, RF-9S , RF-SD, RM-23                             $4,618          $4,463           $19,573         $4,570      $2,570      $28,139     $63,934    /lot
+5    RM-D                                                                          $4,618          $4,463           $19,573         $4,570      $2,570      $28,139     $63,934    /DU (a)
+6    RM-M                                                                          $4,618          $4,463            $9,808         $2,290       $959       $28,139     $50,278    /pad or /DU
+
+
+     Multi Family Residential
+7    RM-10, RM-15, RM-30, RC (Type Ill)                                             $2.46           $2.38             $8.08          $1.89      $1.63       $20.64      $37.08     /sq.ft. of DU (b)
+8    RM-45, RM-70 (except lines 9 & 10)                                             $3.38           $3.26            $10.51          $2.45      $1.15       $24.09      $44.85     /sq.ft. of DU (c)
+9    RM-45, RM-70 {for Seniors Apartments)                                          $3.38           $3.26             $6.84          $1.60      $1.28       $25.53      $41 .90    /sq.ft. of DU (c)
+10   RM-45, RM-70 (for Assisted Living Residences)                                  $3.38           $3.26             $6.84          $1 .60     $1 .28      $16.44      $32.80     /sq.ft. of DU (c)
+11   RMS-1, RMS-2, RMS-1A                                                           $1 .53          $1.48             $1.64          $0.39      $1.08        $0.00       $6.12     /sq.ft. of BA
+
+
+     Commercial Zones excluding CTA, CPG, CPM,
+     CPR, & CCR
+12   Commercial - Ground floor                                                      $1.53           $1.48             $7.99          $1.87      $2.83        $0.00      $15.70     /sq.ft. of BA
+13   Commercial - All other floors                                                  $1.53           $1.48             $5.04          $1.18      $0.56        $0.00       $9.79     /sq.ft. of BA
+
+
+     CTA, CPG, CPM CPR, and CCR
+14   CTA                                                                          $2,295          $2,222             $4,902         $1, 147      $960        $0.00      $11 ,525   /pad (d)
+15   CPG, CPM , CPR,CCR                                                             $1 .68          $1.63             $6.35          $1.48      $1.70        $0.00      $12.84     /sq.ft. of BA
+
+
+     Institutional
+16   PA-1 , PA-2, PC                                                                $1 .68          $1 .63            $0.00          $0.00      $1.70        $0.00       $5.01     /sq .ft. of BA
+17   Public & Private Schools (to grade 12)                                         $1 .68          $1.63             $0.00          $0.00      $1.70        $0.00       $5.01     /sq.ft. of BA
+18   Public & Private Schools (Post Secondary)                                      $1.68           $1.63             $5.09          $1.19      $1.70        $0.00      $11.29     /sq.ft. of BA
+19   Hospitals                                                                      $1.68           $1.63             $2.54          $0.59      $1.70        $0.00       $8.15     /sq.ft. of BA
+20   Federal and Provincial Buildings                                               $1.68           $1.63             $5.00          $1 .17     $0.56        $0.00      $10.03     /sq.ft. of BA
+21   Municipal Buildings                                                            $0.00           $0.00             $0.00          $0.00      $0.00        $0.00       $0.00     /sq.ft. of BA
+
+
+
+     (a) Based on maximum of 2 DU per lot.
+     (b) To a maximum of $64,888/DU.
+     (c) To a maximum of $60,546/DU.
+     (d) Rate to be charged per trailer pad or camping site in addition to rate of lines 12 and 13 for BA of any other building.
+                                                                                                  Schedule F
+                                                                    Surrey Development Cost Charge Bylaw, 2024, No. 21174
+
+                                                                                                      Darts Hill
+     Zones and Land Uses
+     Darts Hill (Only this Schedule G)                                                                               DCC Components
+                                                                                                                                                                             Units for Each
+No                                                                                                                                                                  Total
+                                                                                                                                                                                Column
+                                                                                                             Arterial         Collector               Parkland
+                                                                               Water          Sewer                                       Drainage
+                                                                                                             Roads             Roads                 Acquisition
+
+     Agricultural
+
+1    A-1,A-2                                                                     $0              $0             $0               $0          $0          $0          $0      not
+
+
+
+     Single Family Residential
+
+2    RA, RA-G, RH, RH-G, RC (Types I and II) , RF-O, RQ                        $3,520         $5,451         $21,494           $5,019     $26,128      $7,948      $69,560   not
+3    RF, RF-G, RF-SS, RF-12, RF-12C, RF-13                                     $3,404         $5,270         $21,494           $5,019     $14,931      $15,895     $66,014   not
+4    RF-10, RF-10S, RF-9, RF-9C, RF-9S, RF-SD, RM-23                           $3,101         $4,801         $19,573           $4,570      $8,809      $14,474     $55,328   not
+5    RM-D                                                                      $3,101         $4,801         $19,573           $4,570      $8,809      $14,474     $55,328   /DU (a)
+6    RM-M                                                                      $1,702         $2,636          $9,808           $2,290      $3,284      $14,474     $34,195   /pad or /DU
+
+
+
+     Multi Family Residential
+
+7    RM-10, RM-15 , RM-30, RC (Type Ill)                                       $1.39           $2.14          $8.08             $1.89      $5.59       $14.57      $33.66    /sq.ft. of DU (b)
+8    RM-45, RM-70 (except lines 9 & 10)                                        $1 .79          $2.77          $10.51            $2.45      $3.93       $14.84      $36.31    /sq.ft. of DU (c)
+9    RM-45, RM-70 (for Seniors Apartments)                                     $2.00           $3.10          $6.84             $1.60      $4.39       $16.59      $34.52    /sq.ft. of DU (c)
+10   RM-45, RM-70 (for Assisted Living Residences)                             $2.00           $3.10          $6.84             $1.60      $4.39        $5.53      $23.46    /sq.ft. of DU (c)
+11   RMS-1, RMS-2, RMS-1A                                                      $0.81           $1 .20         $1.64             $0.39      $3.73        $0.00       $7.77    /sq.ft. of BA
+
+
+     Commercial Zones excluding CTA, CPG, CPM, CPR, &
+     CCR
+
+12   Commercial - Ground fioor                                                 $0.81           $1.20          $7.99             $1.87      $9.70        $0.00      $21.57    /sq .ft. of BA
+13   Commercial - All other fioors except ground fioor                         $0.81           $1.20          $5.04             $1.18      $1.94        $0.00      $10.17    /sq.ft. of BA
+
+
+
+     CTA, CPG, CPM CPR, and CCR
+
+14   CTA                                                                     $1,220          $1,804           $4,902           $1,147      $3,285       $0.00      $12,360   /pad (d}
+15   CPG, CPM, CPR, CCR                                                        $0.88           $1 .20         $6.35             $1.48      $5.82        $0.00      $15.73    /sq.ft. of BA
+
+
+
+     Institutional
+
+16   PA-1, PA-2, PC                                                            $0.88           $1 .20         $0.00             $0.00      $5.82        $0.00       $7.90    /sq.ft. of BA
+17   Public & Private Schools (to grade 12)                                    $0.88           $1.20          $0.00             $0.00      $5.82        $0.00       $7.90    /sq.ft. of BA
+18   Public & Private Schools (Post Secondary)                                 $0.88           $1 .20         $5.09             $1.19      $5.82        $0.00      $14.17    /sq.ft. of BA
+19   Hospitals                                                                 $0.88           $1.20          $2.54             $0.59      $5.82        $0.00      $11 .03   /sq.ft. of BA
+20   Federal and Provincial Buildings                                          $0.88           $1.20          $5.00             $1.17      $1.94        $0.00      $10.18    /sq.ft. of BA
+21   Municipal Buildings                                                       $0.00           $0.00          $0.00             $0.00      $0.00        $0.00       $0.00    /sq.ft. of BA
+
+
+
+
+     (a) Based on a maximum of 2 DU per lot.
+     (b) To a maximum of $58,901 /DU.
+     (c) To a maximum of $49,015/DU.
+     (d) Rate to be charged per trailer pad or camping site in addition to rate of lines 12 and 13 for BA of any building .
+                                                         Schedule G
+
+                                  Surrey Development Cost Charge Bylaw, 2024, No. 21174
+
+
+                                 West Clayton (Schedule B plus Schedule G)
+     Zones and Land Uses
+     West Clayton (Schedule B plus this Schedule G)                     DCC Components
+                                                                                                                   Units for Each
+No                                                                                                   Total
+                                                                                                                      Column
+                                                                       Sewer        Drainage
+
+
+     Single Family Residentia l
+
+1    RA, RA-G, RH , RH-G , RC (Types I and II), RQ                       $0             $0            $0         /lot
+2    RF, RF-G , RF-SS , RF-12 , RF-12C , RF-1 3                          $0             $0            $0         /lot
+3    RF-10, RF-10S, RF-SD, RM-23                                         $0             $0            $0         /lot
+4    RM-D                                                                $0             $0            $0         /DU (a)
+
+
+
+     Multi Family Residential
+
+5    RM-10 , RM-15, RM-30, RC (Type Ill )                               $0.00         $0.00          $0.00       /sq .ft. of DU (b}
+6    RM-45 , RM-70 (except lines 7 & 8)                                 $0.00         $0.00          $0.00       /sq .ft. of DU (c)
+7    RM-45 , RM-70 (for Seniors Apartments)                             $0.00         $0.00          $0.00       /sq .ft. of DU (c)
+8    RM-45 , RM-70 (for Assisted Living Residences)                     $0.00         $0.00          $0.00       /sq .ft. of DU (c)
+9    RMS-1 , RMS-2, RMS-1A                                              $0.00         $0.00          $0.00       /sq.ft. of BA
+
+
+
+     Commercial Zones
+
+10   Commercial - Ground floor                                          $0.00         $0.00          $0.00       /sq .ft. of BA (d)
+11   Commercial - All other floors except ground floor                  $0.00         $0.00          $0.00       /sq.ft. of BA (d)
+12   CPG , CPM , CPR, CCR                                               $0 .00        $0.00          $0.00       /sq .ft. of BA
+
+
+     Dwelling Units in Non Residential
+
+13   DU in Non Residential Zones                                        $0.00         $0.00          $0.00       /sq.ft. of DU (c)
+
+
+     Institutional
+
+14   PA-1 , PA-2, PC                                                    $0.00         $0.00          $0.00       /sq .ft. of BA (d)
+15   Public & Private Schools (to grade 12)                             $0.00         $0.00          $0.00       /sq .ft. of BA (d)
+16   Public & Private Schools (Post Secondary)                          $0.00         $0.00          $0.00       /sq .ft. of BA (d)
+17   Hospitals                                                          $0.00         $0.00          $0.00       /sq.ft. of BA (d}
+18   Federal and Provincial Bu ildings                                  $0.00         $0.00          $0.00       /sq.ft. of BA (d)
+19   Mun icipal Buildings                                               $0.00         $0.00          $0.00       /sq .ft. of BA
+
+
+
+
+     (a) With an an ultimate of 2 DU per lot.
+     (b} To a maximum of $0/DU .
+     (c) To a maximum of $0/DU .
+     (d) Dwelling Units within Non Residential Zones and Land Uses shall be cha rged the applicable rate in line 13.
+

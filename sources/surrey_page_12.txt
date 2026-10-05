@@ -1,0 +1,52 @@
+Schedule D
+Surrey Development Cost Charge Bylaw, 2024, No. 21174
+Anniedale-Tynehead
+Zones and Land Uses
+Anniedale-Tynehead (Only this Schedule E) DCC Components
+Units for Each
+No Total Column
+Arterial Collector Parkland
+Water Sewer Drainage
+Roads Roads Acquisition
+Agricultural
+1 A-1,A-2 $0 $0 $0 $0 $0 $0 $0 /lot
+Single Family Residential
+2 RA, RA-G, RH, RH-G, RC (Types I and II), RF-O, RO $3,821 $6,463 $24,531 $5,541 $10,874 $4,704 $55,935 /lot
+3 RF, RF-G, RF-SS, RF-12, RF-12C, RF-13 $3,821 $6,463 $24,531 $5,541 $6,214 $9,410 $55,981 /lot
+4 RF-10, RF-10S, RF-9, RF-9C, RF-9S, RF-SD, RM-23 $3,444 $5,825 $22,324 $5,043 $3,666 $8,563 $48,866 /lot
+5 RM-D $3,444 $5,825 $22,324 $5,043 $3,666 $8,563 $48,866 /DU (a)
+6 RM-M $2,441 $4,129 $13,247 $2,992 $1,367 $8,563 $32,740 /pad or /DU
+Multi Family Residential
+7 RM-10, RM-15, RM-30, RC (Type Ill) $2.15 $3.63 $10.47 $2.37 $2.40 $9.78 $30.80 /sq.ft. of DU (b)
+8 RM-45, RM-70 (except lines 9 & 10) $2.44 $4.13 $13.50 $3.05 $1.55 $9.89 $34.55 /sq.ft. of DU (c)
+9 RM-45, RM-70 (for Seniors Apartments ) $2.44 $4.13 $7.85 $1.77 $1.55 $9.89 $27.64 /sq.ft. of DU (c)
+10 RM-45, RM-70 (for Assisted Living Residences) $2.44 $4.13 $7.85 $1.77 $1.55 $3.30 $21.05 /sq.ft. of DU (c)
+11 RM-135, RMC-135, RMC-150 (except lines 12 & 13) $2.35 $3.97 $10.15 $2.29 $0.57 $8.00 $27.33 /sq.ft. of DU (d)
+12 RM-135, RMC-135, RMC-150 (for Seniors Apartments) $2.35 $3.97 $7.61 $1.72 $0.57 $8.00 $24.22 /sq.ft. of DU (d)
+13 RM-135, RMC-135, RMC-150 (Assisted Living Residences) $2.35 $3.97 $7.61 $1.72 $0.57 $2.67 $18.90 /sq.ft. of DU (d)
+14 RMS-1, RMS-2, RMS-1A $1.18 $1.99 $2.21 $0.50 $1.55 $0.00 $7.44 /sq.ft. of BA
+Commercial Zones excluding CTA, CPG, CPM, CPR,
+and CCR
+15 Commercial -Ground floor $1.18 $1.99 $10.80 $2.44 $4.04 $0.00 $20.44 /sq.ft. of BA (e)
+16 Commercial -All other floors except ground floor $1.18 $1.99 $6.81 $1.53 $0.80 $0.00 $12.32 /sq.ft. of BA (e)
+CTA, CPG, CPM CPR, and CCR
+17 CTA $1,773 $2,993 $6,623 $1,491 $1,366 $0 $14,247 /pad (f)
+18 CPG, CPM, CPR, CCR $1.29 $1.99 $8.58 $1.94 $2.42 $0.00 $16.23 /sq.ft. of BA
+Dwelling Units in Non Residential
+19 DU in Non Residential Zones $2.44 $4.13 $13.50 $3.05 $1.55 $9.89 $34.55 /sq.ft. of DU (c)
+Industrial
+20 All Industrial Zones & Land Uses -Developed Area $11,793 $19,948 $79,728 $18,008 $52,818 $0 $182,296 /acre (e)
+21 All Industrial Zones & Land Uses -All other floors $0.27 $0.46 $0.83 $0.19 $0.24 $0.00 $1.99 /sq.ft. of BA (e)
+Institutional
+22 PA-1, PA-2, PC $1.29 $1.99 $0.00 $0.00 $2.42 $0.00 $5.71 /sq.ft. of BA (e)
+23 Public & Private Schools (to grade 12) $1.29 $1.99 $0.00 $0.00 $2.42 $0.00 $5.71 /sq.ft. of BA (e)
+24 Public & Private Schools (Post Secondary) $1.29 $1.99 $6.87 $1.55 $2.42 $0.00 $14.13 /sq.ft. of BA (e)
+25 Hospitals $1.29 $1.99 $3.43 $0.77 $2.42 $0.00 $9.91 /sq.ft. of BA (e)
+26 Federal and Provincial Buildings $1.29 $1.99 $6.75 $1.52 $0.80 $0.00 $12.36 /sq.ft. of BA (e)
+27 Municipal Buildings $0.00 $0.00 $0.00 $0.00 $0.00 $0.00 $0.00 /sq.ft. of BA
+(a) With a maximum of 2 DU per lot.
+(b) To a maximum of $53,895/DU.
+(c) To a maximum of $46,648/DU.
+(d) To a maximum of $34, 166/DU.
+(e) Dwelling Units within Non Residential Zones and Land Uses shall be charged the applicable rate in line 19.
+(f) Rate to be charged per trailer pad or camping site in addition to rate of lines 15 and 16 for BA of any building.
