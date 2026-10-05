@@ -1,1 +1,13 @@
-{"status":"ok","db":"/workspace/municipal-dcc-api/db/dcc.sqlite3","snapshots":{"surrey":2,"victoria":2}}
+{
+    "status": "ok",
+    "db": "/workspace/municipal-dcc-api/db/dcc.sqlite3",
+    "snapshots": {
+        "surrey": 2,
+        "victoria": 2
+    },
+    "billing": {
+        "checkout_enabled": false,
+        "webhook_enabled": false,
+        "mode": null
+    }
+}

@@ -3,7 +3,9 @@
 
 Usage:
   python examples/python/get_rates.py
-  BASE_URL=http://127.0.0.1:8080 python examples/python/get_rates.py
+  BASE_URL=http://127.0.0.1:8080 DCC_API_KEY=dcc_... python examples/python/get_rates.py
+
+If DCC_API_KEY is unset, a free key is created (POST /v1/keys) and printed — save it.
 """
 from __future__ import annotations
 
@@ -15,14 +17,27 @@ import urllib.parse
 import urllib.request
 
 BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:8080").rstrip("/")
+API_KEY = os.environ.get("DCC_API_KEY")
 
 
 def get(path: str, params: dict | None = None) -> dict:
     url = f"{BASE_URL}{path}"
     if params:
         url = f"{url}?{urllib.parse.urlencode(params)}"
-    with urllib.request.urlopen(url, timeout=30) as resp:
+    req = urllib.request.Request(url, headers={"X-API-Key": API_KEY} if API_KEY else {})
+    with urllib.request.urlopen(req, timeout=30) as resp:
         return json.loads(resp.read().decode("utf-8"))
+
+
+def create_free_key() -> str:
+    req = urllib.request.Request(f"{BASE_URL}/v1/keys", data=b"", method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            key = json.loads(resp.read().decode("utf-8"))["api_key"]
+    except urllib.error.HTTPError as exc:
+        raise SystemExit(f"Could not create a free key: {exc.code} {exc.read().decode('utf-8')}")
+    print(f"Created free API key (save it): export DCC_API_KEY={key}\n")
+    return key
 
 
 def main() -> int:
@@ -36,7 +51,11 @@ def main() -> int:
     print("Municipalities:")
     for m in munis["municipalities"]:
         flag = " PROVISIONAL" if m["provisional"] else ""
-        print(f"  - {m['slug']}: bylaw {m['bylaw_id']}, {m['rate_count']} rates{flag}")
+        print(f"  - {m['slug']}: bylaw {m['bylaw_id']}, {m['rate_count']} rates{flag} (min_plan={m['min_plan']})")
+
+    global API_KEY
+    if not API_KEY:
+        API_KEY = create_free_key()
 
     data = get(
         "/rates/victoria",

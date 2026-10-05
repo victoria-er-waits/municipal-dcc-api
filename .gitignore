@@ -36,3 +36,8 @@ Thumbs.db
 *.pem
 *.key
 credentials.json
+
+# Day 5: customer/account data (API key hashes, Stripe ids, usage) — never commit
+db/accounts.sqlite3
+db/accounts.sqlite3-*
+*.accounts.sqlite3

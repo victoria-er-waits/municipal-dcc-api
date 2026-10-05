@@ -1,0 +1,67 @@
+== 1. Create a free API key ==
+{
+    "api_key": "dcc_<redacted-local-test-key>",
+    "key_id": "key_b528bfdfda65d845",
+    "plan": "free",
+    "email": "stranger@example.com",
+    "created_at": "2026-10-05T20:44:08+00:00",
+    "daily_limit": 50,
+    "entitlements": {
+        "municipalities": [
+            "victoria"
+        ],
+        "changes": false,
+        "history": false
+    },
+    "warning": "Store this api_key now. It is shown ONCE and only its hash is kept.",
+    "usage": "curl -H 'X-API-Key: dcc_<redacted-local-test-key>' http://127.0.0.1:8080/rates/victoria",
+    "upgrade_url": "http://127.0.0.1:8080/v1/plans",
+    "checkout": "POST http://127.0.0.1:8080/v1/checkout  (header X-API-Key, JSON body {\"plan\": \"starter\"|\"pro\"})"
+}
+
+== 2. Victoria current rates (free) — provisional must be true ==
+{'provisional': True, 'method': 'wayback_provisional', 'count': 1, 'rate': 14529.66, 'bylaw': '24-053'}
+
+== 3. Surrey on free -> 402 ==
+{"error":"payment_required","message":"Surrey requires a paid plan. Your plan: free. Free plan includes: victoria current rates.","plan":"free","upgrade_url":"http://127.0.0.1:8080/v1/plans","checkout":"POST http://127.0.0.1:8080/v1/checkout  (header X-API-Key, JSON body {\"plan\": \"starter\"|\"pro\"})","required_plan":"starter","price":"$49/month"}  [HTTP 402]
+
+== 4. Changes on free -> 402; historical version on free -> 402 ==
+{"error":"payment_required","message":"/changes requires Starter or Pro. Your plan: free.","plan":"free","upgrade_url":"http://127.0.0.1:8080/v1/plans","checkout":"POST http://127.0.0.1:8080/v1/checkout  (header X-API-Key, JSON body {\"plan\": \"starter\"|\"pro\"})","required_plan":"starter","price":"$49/month"}  [HTTP 402]
+{"error":"payment_required","message":"Historical snapshots (non-current versions) require Pro. Your plan: free.","plan":"free","upgrade_url":"http://127.0.0.1:8080/v1/plans","checkout":"POST http://127.0.0.1:8080/v1/checkout  (header X-API-Key, JSON body {\"plan\": \"starter\"|\"pro\"})","required_plan":"pro","price":"$149/month"}  [HTTP 402]
+
+== 5. Exhaust the free daily limit on a throwaway key ==
+  50 successful requests, then:
+{"error":"daily_limit_exceeded","message":"Daily request limit reached for plan 'free' (50/day). Resets at 00:00 UTC. Upgrade to starter for 5,000/day.","plan":"free","daily_limit":50,"upgrade_url":"http://127.0.0.1:8080/v1/plans","checkout":"POST http://127.0.0.1:8080/v1/checkout  (header X-API-Key, JSON body {\"plan\": \"starter\"|\"pro\"})","required_plan":"starter","price":"$49/month"}  [HTTP 429]
+
+== 6. Upgrade the FIRST key to Starter ==
+  (manual/dev test purchase via /v1/admin/unlock)
+{'plan': 'starter', 'source': 'admin_unlock', 'usage': {'day_utc': '2026-10-05', 'requests': 1, 'daily_limit': 5000, 'remaining': 4999}}
+
+== 7. Paid: Surrey + changes work; Victoria still provisional ==
+{'provisional': False, 'count': 1, 'rate': 55260.0}
+{'provisional': True, 'summary': 'Victoria — 3 rates changed since the previous version (v1 → v2)'}
+{'victoria_provisional': True, 'method': 'wayback_provisional'}
+{"error":"payment_required","message":"Historical snapshots (non-current versions) require Pro. Your plan: starter.","plan":"starter","upgrade_url":"http://127.0.0.1:8080/v1/plans","checkout":"POST http://127.0.0.1:8080/v1/checkout  (header X-API-Key, JSON body {\"plan\": \"starter\"|\"pro\"})","required_plan":"pro","price":"$149/month"}  [HTTP 402] (history is Pro-only)
+{
+    "key_id": "key_b528bfdfda65d845",
+    "key_prefix": "dcc_uySS-U_Z",
+    "email": "stranger@example.com",
+    "plan": "starter",
+    "plan_source": "admin_unlock",
+    "subscription_status": null,
+    "entitlements": {
+        "municipalities": [
+            "surrey",
+            "victoria"
+        ],
+        "changes": true,
+        "history": false
+    },
+    "usage": {
+        "day_utc": "2026-10-05",
+        "requests": 4,
+        "daily_limit": 5000,
+        "remaining": 4996
+    },
+    "created_at": "2026-10-05T20:44:08+00:00"
+}

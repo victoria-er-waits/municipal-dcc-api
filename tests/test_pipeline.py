@@ -74,7 +74,12 @@ def test_api_endpoints(tmp_path, monkeypatch):
     pipeline.create_snapshot(c, "victoria", rows, label="v2 test", parser="test")
     c.close()
     monkeypatch.setattr(api, "_DB", str(db))
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "accounts.sqlite3"))
+    monkeypatch.setenv("ADMIN_UNLOCK_TOKEN", "test-only-token")
     client = TestClient(api.app)
+    key = client.post("/v1/keys").json()["api_key"]
+    client.post("/v1/admin/unlock", json={"api_key": key, "plan": "pro"}, headers={"X-Admin-Token": "test-only-token"})
+    client.headers["X-API-Key"] = key
     v = client.get("/rates/victoria", params={"use_type": "commercial"}).json()
     assert v["provisional"] is True and v["source_retrieval_method"] == "wayback_provisional"
     assert v["count"] == 6 and all(r["provenance"]["provisional"] for r in v["rates"])

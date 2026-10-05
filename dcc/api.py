@@ -1,4 +1,7 @@
-"""Read-only FastAPI over db/dcc.sqlite3. Scope: Surrey + Victoria only."""
+"""FastAPI over db/dcc.sqlite3. Scope: Surrey + Victoria only.
+
+Day 5: API-key + plan boundary (see dcc/billing.py). /health, /municipalities, /v1/plans, /v1/keys are open;
+/rates and /changes need an API key and are gated by plan + daily request limit."""
 from __future__ import annotations
 
 import json
@@ -6,13 +9,93 @@ import os
 import sqlite3
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query
+import hmac
 
+from fastapi import Body, Depends, FastAPI, HTTPException, Query, Request, Response
+from fastapi.responses import JSONResponse
+from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
+
+from . import billing
 from .config import DB_PATH, MUNICIPALITIES, resolve_slug
 from .db import connect
 
-app = FastAPI(title="Canadian Municipal DCC Data API (MVP: Surrey + Victoria)", version="0.2.0")
+app = FastAPI(title="Canadian Municipal DCC Data API (MVP: Surrey + Victoria)", version="0.3.0",
+              description="Free: Victoria current rates (50 req/day). Starter $49/mo: Surrey + Victoria + "
+                          "/changes. Pro $149/mo: + historical snapshots. Get a key: POST /v1/keys.")
 _DB = os.environ.get("DCC_DB", str(DB_PATH))
+
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+_bearer = HTTPBearer(auto_error=False)
+
+
+class ApiError(Exception):
+    def __init__(self, status: int, error: str, message: str, headers: dict | None = None, **extra):
+        self.status, self.headers = status, headers or {}
+        self.body = {"error": error, "message": message, **extra}
+
+
+@app.exception_handler(ApiError)
+async def _api_error_handler(_request: Request, exc: ApiError):
+    return JSONResponse(status_code=exc.status, content=exc.body, headers=exc.headers)
+
+
+def _client_ip(request: Request) -> str:
+    return request.client.host if request.client else "unknown"
+
+
+def current_account(
+    x_api_key: Optional[str] = Depends(_api_key_header),
+    bearer: Optional[HTTPAuthorizationCredentials] = Depends(_bearer),
+):
+    """Resolve the API key (X-API-Key header or Authorization: Bearer). 401 if missing/invalid."""
+    key = x_api_key or (bearer.credentials if bearer else None)
+    get_key = f"POST {billing.public_base_url()}/v1/keys  (optional JSON body {{\"email\": \"you@example.com\"}})"
+    if not key:
+        raise ApiError(401, "api_key_required",
+                       "Send your API key in the X-API-Key header (or Authorization: Bearer <key>). "
+                       "Free keys are instant.", get_key=get_key)
+    conn = billing.connect()
+    try:
+        row = billing.find_by_key(conn, key)
+    finally:
+        conn.close()
+    if row is None:
+        raise ApiError(401, "invalid_api_key", "API key not recognised.", get_key=get_key)
+    return row
+
+
+def _authorize(acct, response: Response, slug: str, *, changes: bool = False, history: bool = False) -> None:
+    """Plan entitlement (402) then daily metering (429). Sets X-RateLimit-* headers on success."""
+    plan = acct["plan"]
+    p = billing.PLANS[plan]
+    if slug not in p["municipalities"]:
+        raise ApiError(402, "payment_required",
+                       f"{MUNICIPALITIES[slug]['municipality']} requires a paid plan. Your plan: {plan}. "
+                       f"Free plan includes: {', '.join(billing.PLANS['free']['municipalities'])} current rates.",
+                       plan=plan, **billing.upgrade_info("starter"))
+    if changes and not p["changes"]:
+        raise ApiError(402, "payment_required", f"/changes requires Starter or Pro. Your plan: {plan}.",
+                       plan=plan, **billing.upgrade_info("starter"))
+    if history and not p["history"]:
+        raise ApiError(402, "payment_required",
+                       f"Historical snapshots (non-current versions) require Pro. Your plan: {plan}.",
+                       plan=plan, **billing.upgrade_info("pro"))
+    limit = billing.daily_limit(plan)
+    conn = billing.connect()
+    try:
+        used = billing.bump(conn, f"key:{acct['key_id']}")
+    finally:
+        conn.close()
+    headers = {"X-RateLimit-Limit": str(limit), "X-RateLimit-Remaining": str(max(limit - used, 0)),
+               "X-RateLimit-Reset": "00:00 UTC", "X-Plan": plan}
+    if used > limit:
+        nxt = {"free": "starter", "starter": "pro"}.get(plan)
+        raise ApiError(429, "daily_limit_exceeded",
+                       f"Daily request limit reached for plan '{plan}' ({limit}/day). Resets at 00:00 UTC."
+                       + (f" Upgrade to {nxt} for {billing.daily_limit(nxt):,}/day." if nxt else ""),
+                       headers={**headers, "Retry-After": "3600"}, plan=plan, daily_limit=limit,
+                       **(billing.upgrade_info(nxt) if nxt else {}))
+    response.headers.update(headers)
 
 
 def db() -> sqlite3.Connection:
@@ -84,7 +167,7 @@ def health():
     try:
         counts = {row["slug"]: row["n"] for row in conn.execute(
             "SELECT slug, COUNT(*) n FROM snapshots GROUP BY slug")}
-        return {"status": "ok", "db": _DB, "snapshots": counts}
+        return {"status": "ok", "db": _DB, "snapshots": counts, "billing": billing.stripe_status()}
     finally:
         conn.close()
 
@@ -104,8 +187,11 @@ def municipalities():
                 "provisional": cfg["provisional"], "current_snapshot_version": s["version"] if s else None,
                 "rate_count": s["row_count"] if s else 0,
                 "last_checked_at": src["last_checked_at"] if src else None,
+                "min_plan": "free" if slug in billing.PLANS["free"]["municipalities"] else "starter",
             })
-        return {"municipalities": out}
+        return {"municipalities": out,
+                "access": {"auth": "X-API-Key header required for /rates and /changes",
+                           "get_key": "POST /v1/keys", "plans": "GET /v1/plans"}}
     finally:
         conn.close()
 
@@ -113,15 +199,19 @@ def municipalities():
 @app.get("/rates/{muni}")
 def rates(
     muni: str,
+    response: Response,
     use_type: Optional[str] = Query(None, description="case-insensitive substring match on use_type"),
     charge_type: Optional[str] = Query(None, description="case-insensitive exact match (e.g. 'Total DCC', 'Water')"),
     schedule: Optional[str] = Query(None, description="schedule letter, e.g. B (Surrey) or A (Victoria)"),
     unit: Optional[str] = Query(None, description="normalized unit code, e.g. per_lot"),
-    version: Optional[int] = Query(None, description="snapshot version (default: current)"),
+    version: Optional[int] = Query(None, description="snapshot version (default: current). Non-current = Pro"),
+    acct=Depends(current_account),
 ):
     slug = _slug_or_404(muni)
     conn = db()
     try:
+        cur = _snapshot(conn, slug)
+        _authorize(acct, response, slug, history=version is not None and (cur is None or version != cur["version"]))
         snap = _snapshot(conn, slug, version)
         if snap is None:
             raise HTTPException(404, detail=f"No snapshot for {slug} (version={version})")
@@ -165,12 +255,21 @@ def rates(
 @app.get("/changes/{muni}")
 def changes(
     muni: str,
+    response: Response,
     to_version: Optional[int] = Query(None, description="default: current snapshot"),
     from_version: Optional[int] = Query(None, description="default: the snapshot before to_version"),
+    acct=Depends(current_account),
 ):
     slug = _slug_or_404(muni)
     conn = db()
     try:
+        # Starter: latest diff only (current vs previous). Any other version pair = historical = Pro.
+        cur = _snapshot(conn, slug)
+        prev = conn.execute("SELECT version FROM snapshots WHERE slug=? AND version<? ORDER BY version DESC LIMIT 1",
+                            (slug, cur["version"])).fetchone() if cur else None
+        hist = ((to_version is not None and (cur is None or to_version != cur["version"])) or
+                (from_version is not None and (prev is None or from_version != prev["version"])))
+        _authorize(acct, response, slug, changes=True, history=hist)
         name = MUNICIPALITIES[slug]["municipality"]
         to_s = _snapshot(conn, slug, to_version)
         if to_s is None:
@@ -223,5 +322,164 @@ def changes(
                 "source": {"bylaw_id": src["bylaw_id"], "source_url": src["source_url"],
                            "wayback_url": src["wayback_url"], "last_checked_at": src["last_checked_at"]},
                 "changes": chg}
+    finally:
+        conn.close()
+
+
+# =============================================================================================== Day 5: /v1
+@app.get("/v1/plans")
+def plans():
+    """Public pricing + how to upgrade."""
+    base = billing.public_base_url()
+    return {
+        "plans": {k: {**v, "daily_limit": billing.daily_limit(k)} for k, v in billing.PLANS.items()},
+        "how_to_upgrade": [
+            f"1. Get a free key: POST {base}/v1/keys",
+            f"2. POST {base}/v1/checkout with header X-API-Key and body {{\"plan\": \"starter\"}} or "
+            "{\"plan\": \"pro\"}",
+            "3. Open the returned checkout_url and pay with Stripe Checkout.",
+            "4. Your SAME key is upgraded automatically (Stripe webhook). Check with GET /v1/account.",
+        ],
+        "payments": billing.stripe_status(),
+        "notes": ["Prices are monthly subscriptions billed by Stripe; cancel any time (plan reverts to free). "
+                  "Currency is whatever the operator set on the Stripe Price.",
+                  "Daily limits reset at 00:00 UTC.",
+                  "Victoria data is provisional (Wayback-sourced) on every plan."],
+    }
+
+
+@app.post("/v1/keys", status_code=201)
+def create_key(request: Request, payload: Optional[dict] = Body(None)):
+    """Create a FREE API key. Optional {"email": "..."} (unverified; used to prefill Stripe Checkout)."""
+    email = (payload or {}).get("email")
+    if email is not None:
+        email = str(email).strip().lower()
+        if not billing.EMAIL_RE.match(email):
+            raise ApiError(422, "invalid_email", "email looks invalid; omit it or send a valid address.")
+    ip = _client_ip(request)
+    conn = billing.connect()
+    try:
+        if billing.bump(conn, f"signup_ip:{ip}") > billing.key_create_limit():
+            raise ApiError(429, "key_creation_limit", f"Max {billing.key_create_limit()} new keys per IP per "
+                           "day. Reuse your existing key.")
+        out = billing.create_key(conn, email, ip)
+    finally:
+        conn.close()
+    base = billing.public_base_url()
+    return {**out, "daily_limit": billing.daily_limit("free"),
+            "entitlements": {"municipalities": billing.PLANS["free"]["municipalities"], "changes": False,
+                             "history": False},
+            "warning": "Store this api_key now. It is shown ONCE and only its hash is kept.",
+            "usage": f"curl -H 'X-API-Key: {out['api_key']}' {base}/rates/victoria",
+            **billing.upgrade_info()}
+
+
+@app.get("/v1/account")
+def account(acct=Depends(current_account)):
+    """Your plan, entitlements, and today's usage (does not count toward the limit)."""
+    conn = billing.connect()
+    try:
+        return billing.account_view(conn, acct)
+    finally:
+        conn.close()
+
+
+@app.post("/v1/checkout")
+def checkout(payload: dict = Body(..., examples=[{"plan": "starter"}]), acct=Depends(current_account)):
+    """Create a Stripe Checkout Session for starter|pro. Needs STRIPE_SECRET_KEY + STRIPE_PRICE_* (operator)."""
+    plan = str(payload.get("plan", "")).lower()
+    if plan not in billing.PAID_PLANS:
+        raise ApiError(422, "invalid_plan", "plan must be 'starter' or 'pro'.")
+    if acct["plan"] == plan:
+        raise ApiError(409, "already_on_plan", f"This key is already on {plan}.")
+    if billing.live_blocked():
+        raise ApiError(503, "live_payments_disabled",
+                       "This server is in Stripe TEST MODE only; a live key is configured but STRIPE_ALLOW_LIVE is "
+                       "not 'true'. Operator: see DAY5_VERIFICATION.md 'Going live'.")
+    if not billing.stripe_status()["checkout_enabled"]:
+        missing = [n for n in ("STRIPE_SECRET_KEY", "STRIPE_PRICE_STARTER", "STRIPE_PRICE_PRO") if not billing.env(n)]
+        raise ApiError(503, "payments_not_configured",
+                       "Online checkout is not enabled on this server yet (operator has not configured Stripe).",
+                       missing_env=missing)
+    try:
+        return billing.create_checkout(acct, plan)
+    except Exception as exc:  # surface Stripe errors without leaking config
+        raise ApiError(502, "stripe_error", f"Stripe Checkout could not be created: {type(exc).__name__}: "
+                       f"{getattr(exc, 'user_message', None) or str(exc)[:200]}")
+
+
+@app.get("/v1/checkout/success")
+def checkout_success(session_id: Optional[str] = None):
+    """Stripe redirect target. Also applies the plan immediately if Stripe confirms the session is complete
+    (fallback in case the webhook is delayed). The webhook remains the source of truth for renewals/cancels."""
+    out = {"status": "received", "message": "Thanks! Your API key will be upgraded within a few seconds. "
+                                             "Check GET /v1/account with your key."}
+    if session_id and billing.stripe_status()["checkout_enabled"]:
+        try:
+            sess = billing.retrieve_session(session_id).to_dict()
+        except Exception:
+            return out
+        md = sess.get("metadata") or {}
+        kid, plan = sess.get("client_reference_id") or md.get("key_id"), md.get("plan")
+        if sess.get("status") == "complete" and plan in billing.PAID_PLANS and kid:
+            conn = billing.connect()
+            try:
+                row = billing.find_by_id(conn, kid)
+                if row and row["plan"] != plan:
+                    billing.set_plan(conn, kid, plan, "stripe", f"checkout success redirect {session_id}",
+                                     stripe_customer_id=sess.get("customer"),
+                                     stripe_subscription_id=sess.get("subscription"), subscription_status="active")
+                out.update(status="upgraded", plan=plan, key_id=kid)
+            finally:
+                conn.close()
+    return out
+
+
+@app.get("/v1/checkout/cancel")
+def checkout_cancel():
+    return {"status": "canceled", "message": "Checkout canceled; your key is unchanged (still works on its "
+                                             "current plan)."}
+
+
+@app.post("/v1/stripe/webhook")
+async def stripe_webhook(request: Request):
+    """Stripe → us. Verifies Stripe-Signature with STRIPE_WEBHOOK_SECRET. Handles checkout.session.completed,
+    customer.subscription.created/updated/deleted. Disabled (503) until the secret is set."""
+    if not billing.stripe_status()["webhook_enabled"]:
+        raise ApiError(503, "webhook_not_configured", "STRIPE_WEBHOOK_SECRET is not set on this server.")
+    payload = await request.body()
+    try:
+        event = billing.verify_webhook(payload, request.headers.get("stripe-signature"))
+    except Exception:
+        raise ApiError(400, "invalid_signature", "Stripe signature verification failed.")
+    conn = billing.connect()
+    try:
+        result = billing.handle_event(conn, event)
+    finally:
+        conn.close()
+    return {"received": True, "result": result}
+
+
+@app.post("/v1/admin/unlock")
+def admin_unlock(request: Request, payload: dict = Body(..., examples=[{"key_id": "key_...", "plan": "starter"}])):
+    """MANUAL / DEV ONLY: set a key's plan without Stripe ("test purchase"). Requires header X-Admin-Token equal to
+    env ADMIN_UNLOCK_TOKEN. Disabled (404) when ADMIN_UNLOCK_TOKEN is unset."""
+    expected = billing.env("ADMIN_UNLOCK_TOKEN")
+    if not expected:
+        raise ApiError(404, "not_found", "Admin unlock is disabled (ADMIN_UNLOCK_TOKEN not set).")
+    given = request.headers.get("x-admin-token") or ""
+    if not hmac.compare_digest(given.encode(), expected.encode()):
+        raise ApiError(403, "forbidden", "Bad or missing X-Admin-Token.")
+    plan = str(payload.get("plan", "")).lower()
+    if plan not in billing.PLANS:
+        raise ApiError(422, "invalid_plan", "plan must be free, starter, or pro.")
+    conn = billing.connect()
+    try:
+        row = (billing.find_by_key(conn, payload["api_key"]) if payload.get("api_key")
+               else billing.find_by_id(conn, str(payload.get("key_id", ""))))
+        if row is None:
+            raise ApiError(404, "key_not_found", "No such key (send key_id or api_key).")
+        billing.set_plan(conn, row["key_id"], plan, "admin_unlock", "manual test purchase via /v1/admin/unlock")
+        return {"unlocked": True, **billing.account_view(conn, billing.find_by_id(conn, row["key_id"]))}
     finally:
         conn.close()
