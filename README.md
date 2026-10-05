@@ -2,7 +2,7 @@
 
 **Current municipal development-cost-charge (DCC) rates as JSON — without parsing municipal PDFs yourself.**
 
-MVP coverage: **Surrey** and **Victoria** (BC) only. Read-only HTTP API with API keys: **free tier = Victoria current rates**; paid plans unlock Surrey, change diffs, and history.
+Open-core coverage: **Victoria** (free, in this repo) and **Surrey** (paid, hosted API only). Read-only HTTP API with API keys: **free tier = Victoria current rates**; paid plans unlock Surrey, change diffs, and history on the hosted service. This git tree does not contain the Surrey schedule.
 
 **Docs:** [docs/index.md](docs/index.md) · **Examples:** [examples/](examples/) · **License:** [MIT](LICENSE)
 
@@ -14,9 +14,11 @@ MVP coverage: **Surrey** and **Victoria** (BC) only. Read-only HTTP API with API
 |---|---|
 | **Base URL** | `https://municipal-dcc-api.onrender.com` |
 | **Health** | `GET <base>/health` |
-| **Interactive docs** | `<base>/docs` (Swagger UI) · `<base>/openapi.json` |
+| **Interactive docs** | `https://municipal-dcc-api.onrender.com/docs` (Swagger UI) · `<base>/openapi.json` |
 | **Get a free key** | `curl -s -X POST <base>/v1/keys` |
-| **Docs** | this README + [docs/index.md](docs/index.md) (GitHub Pages not enabled yet) |
+| **Free data** | Victoria current rates (this repo + hosted API) |
+| **Paid data** | Surrey, `/changes`, and history — hosted API only |
+| **Docs** | this README + [docs/index.md](docs/index.md) |
 
 Billing runs in **Stripe test mode** until further notice. Operators: see [DEPLOY.md](DEPLOY.md) (Docker + Render).
 
@@ -54,22 +56,17 @@ Full detail: [docs/index.md § Limitations](docs/index.md#limitations-read-these
 
 ## First-use path (under 5 minutes)
 
-### 1. Start the API
+Start at the hosted API. No clone required.
 
-```bash
-cd municipal-dcc-api
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-./scripts/run_api.sh
-# -> http://127.0.0.1:8080
-```
+### 1. Open the docs
 
-(A rebuilt SQLite DB is already in `db/dcc.sqlite3`. To rebuild: `.venv/bin/python scripts/build_db.py`)
+https://municipal-dcc-api.onrender.com/docs
 
 ### 2. Get a free API key (shown once — save it)
 
 ```bash
-curl -s -X POST http://127.0.0.1:8080/v1/keys \
+export BASE_URL=https://municipal-dcc-api.onrender.com
+curl -s -X POST "$BASE_URL/v1/keys" \
   -H 'Content-Type: application/json' -d '{"email":"you@example.com"}' | python3 -m json.tool
 export DCC_API_KEY=dcc_...   # from the response
 ```
@@ -80,7 +77,7 @@ export DCC_API_KEY=dcc_...   # from the response
 
 ```bash
 curl -s -H "X-API-Key: $DCC_API_KEY" \
-  "http://127.0.0.1:8080/rates/victoria?use_type=medium%20density&charge_type=Total%20DCC" \
+  "$BASE_URL/rates/victoria?use_type=medium%20density&charge_type=Total%20DCC" \
   | python3 -m json.tool
 ```
 
@@ -88,7 +85,11 @@ curl -s -H "X-API-Key: $DCC_API_KEY" \
 
 In the JSON, check top-level `provisional: true`, then each rate’s `provenance.bylaw_id`, `provenance.source_url`, `provenance.last_checked_at`, and `provenance.normalization_rules`.
 
-**Scripts:** [`examples/curl/quickstart.sh`](examples/curl/quickstart.sh) · [`examples/curl/stranger_journey.sh`](examples/curl/stranger_journey.sh) (full free → paid flow) · [`examples/python/get_rates.py`](examples/python/get_rates.py) · [`examples/javascript/get_rates.mjs`](examples/javascript/get_rates.mjs) — each creates a free key if `DCC_API_KEY` is unset.
+A free key against `$BASE_URL/rates/surrey` returns **402**. That call does not include Surrey rows. Surrey dollars are not in this repository.
+
+**Scripts** (they default to the hosted base URL): [`examples/curl/quickstart.sh`](examples/curl/quickstart.sh) · [`examples/curl/stranger_journey.sh`](examples/curl/stranger_journey.sh) · [`examples/python/get_rates.py`](examples/python/get_rates.py) · [`examples/javascript/get_rates.mjs`](examples/javascript/get_rates.mjs) — each creates a free key if `DCC_API_KEY` is unset.
+
+Local Victoria-only run is optional and documented under [How to run locally](#how-to-run-locally). Set `BASE_URL=http://127.0.0.1:8080` when you want the scripts to hit it.
 
 ---
 
@@ -100,7 +101,7 @@ In the JSON, check top-level `provisional: true`, then each rate’s `provenance
 4. Cancel the subscription → webhook moves the key back to free.
 
 ```bash
-curl -s -X POST http://127.0.0.1:8080/v1/checkout \
+curl -s -X POST "$BASE_URL/v1/checkout" \
   -H "X-API-Key: $DCC_API_KEY" -H 'Content-Type: application/json' -d '{"plan":"starter"}'
 ```
 
@@ -118,7 +119,8 @@ Nothing payment-related is hardcoded, and this build runs Stripe in **test mode 
 | `STRIPE_PRICE_PRO` | Price ID of a **$149/month recurring** Price |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret (`whsec_…`) of a webhook endpoint at `{PUBLIC_BASE_URL}/v1/stripe/webhook` listening for `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted` |
 | `PUBLIC_BASE_URL` | Public URL of the API (upgrade links + Checkout success/cancel URLs). Default `http://127.0.0.1:8080` |
-| `DATABASE_PATH` | SQLite file for accounts / key hashes / usage / Stripe ids. Default `db/accounts.sqlite3` (gitignored). The rate data DB stays `db/dcc.sqlite3` (`DCC_DB` to override). |
+| `DATABASE_PATH` | SQLite file for accounts / key hashes / usage / Stripe ids. Default `db/accounts.sqlite3` (gitignored). |
+| `DCC_DB` | Optional override for the rate DB. Unset: use `/data/dcc.sqlite3` when that file exists, otherwise `db/dcc.sqlite3` (Victoria-only in git). |
 | `ADMIN_UNLOCK_TOKEN` | **Manual/dev only — leave unset in production.** Enables `POST /v1/admin/unlock` to set a key's plan without Stripe (test purchase). Unset = disabled (404). |
 
 Full walkthrough (Stripe test-mode setup, admin unlock, going live): [`DAY5_VERIFICATION.md`](DAY5_VERIFICATION.md).
@@ -152,20 +154,22 @@ Local tip: every example script creates a new free key unless `DCC_API_KEY` is s
 | POST | `/v1/stripe/webhook` | Stripe signature | Subscription status → plan |
 | POST | `/v1/admin/unlock` | `X-Admin-Token` | Manual/dev plan grant |
 
-Interactive docs when running: http://127.0.0.1:8080/docs (use **Authorize** to paste your key)  
+Interactive docs: https://municipal-dcc-api.onrender.com/docs (use **Authorize** to paste your key).  
 Full reference + sample JSON: [docs/index.md](docs/index.md)
 
 ---
 
 ## How to run locally
 
+This starts a **Victoria-only** API. It is the open-core path, not the only way to call the service — the hosted URL above already serves Victoria.
+
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 cp .env.example .env                            # optional; fill in only what you need
 
-# Use committed DB, or rebuild:
-# .venv/bin/python scripts/build_db.py          # offline rebuild
+# Use the committed Victoria DB, or rebuild it:
+# .venv/bin/python scripts/build_db.py          # offline rebuild (Victoria only)
 # .venv/bin/python scripts/build_db.py --live   # also hash-check official URLs
 
 ./scripts/run_api.sh                            # background → :8080, logs/api.log
@@ -178,7 +182,7 @@ Behind a reverse proxy, run uvicorn with `--proxy-headers --forwarded-allow-ips=
 
 Requirements: Python 3.11+ recommended. Node 18+ only if you run the JS example.
 
-Production / Docker: `docker build -t municipal-dcc-api . && docker run -p 8080:8080 -v dcc-accounts:/data municipal-dcc-api` — full guide in [DEPLOY.md](DEPLOY.md).
+Production / Docker: `docker build -t municipal-dcc-api . && docker run -p 8080:8080 -v dcc-accounts:/data municipal-dcc-api` — the public image is Victoria-only. **Do not deploy that image over the live Render service until the operator rate database is preserved.** Full guide, including the safe rebuild path: [DEPLOY.md](DEPLOY.md).
 
 ---
 
@@ -197,12 +201,13 @@ examples/
   sample-responses/       ← captured live JSON fixtures
 dcc/                      ← FastAPI app + parsers
   billing.py              ← plans, API keys, limits, Stripe checkout/webhook
-db/dcc.sqlite3            ← ready-to-serve rate data (accounts DB is separate + gitignored)
+db/dcc.sqlite3            ← Victoria-only rate DB (accounts DB is separate + gitignored)
 scripts/run_api.sh
-scripts/build_db.py
-Dockerfile, render.yaml    ← production image + Render Blueprint (see DEPLOY.md)
-data/normalized.json      ← Day 1 curated Surrey rows (rebuild input)
-sources/                  ← public bylaw PDFs / extracts
+scripts/build_db.py       ← rebuilds the Victoria fixture; skips Surrey unless an operator file is present
+Dockerfile, render.yaml    ← public image is Victoria-only (see DEPLOY.md before the next Render build)
+data/normalized.json      ← free Victoria fixture (no Surrey rows)
+sources/                  ← Victoria bylaw PDF + text extract only
+operator-data/            ← gitignored drop zone for a private Surrey+Victoria sqlite (README only is tracked)
 ```
 
 Internal build notes (not the stranger-facing path): `DAY1_VERIFICATION.md`, `DAY2_3_README.md`, `DAY2_3_VERIFICATION.md`, `DAY4_VERIFICATION.md`, `DAY5_VERIFICATION.md`.
@@ -211,9 +216,21 @@ Internal build notes (not the stranger-facing path): `DAY1_VERIFICATION.md`, `DA
 
 ## What this MVP deliberately does **not** include
 
-Fancy dashboard, customer portal UI, passwords/user accounts beyond API keys, webhooks beyond Stripe subscription status, additional municipalities, elaborate SDK, marketing, marketplace listing.
+Fancy dashboard, customer portal UI, passwords/user accounts beyond API keys, webhooks beyond Stripe subscription status, additional municipalities, elaborate SDK, marketing site.
 
 ---
+
+## Git history
+
+Paid Surrey schedules used to be committed (`data/normalized.json`, `db/dcc.sqlite3`, `sources/surrey_*`, sample JSON). This branch’s history was rewritten so those blobs are **not ancestors of this branch**. `main` on GitHub still has them until it is replaced.
+
+A normal merge or squash-merge of this branch onto `main` **keeps the old commits reachable**. To purge them, after the operator database is safe (see [DEPLOY.md](DEPLOY.md)):
+
+```bash
+git push --force origin cursor/open-core-boundary-3719:main
+```
+
+That push updates `main` and, with the current Render auto-deploy setting, **starts a deploy**. Pause auto-deploy until `/data/dcc.sqlite3` on the service holds the current rate database. Otherwise the next image is Victoria-only and paid Surrey calls break.
 
 ## License
 

@@ -1,8 +1,17 @@
 # Production image for the Municipal DCC API (FastAPI + uvicorn).
 # Contains NO secrets: configure everything via host environment variables (see .env.example / DEPLOY.md).
 #
+# Public build (Victoria-only rate DB committed in db/dcc.sqlite3):
 #   docker build -t municipal-dcc-api .
 #   docker run --rm -p 8080:8080 -v dcc-accounts:/data municipal-dcc-api
+#
+# Operator build that bakes a private Surrey+Victoria database into the image
+# (file must be inside the build context and must NOT be committed):
+#   docker build --build-arg OPERATOR_DB=operator-data/dcc.sqlite3 -t municipal-dcc-api .
+#
+# Prefer the Render disk path in DEPLOY.md so a redeploy does not need a private
+# image build: copy the live db to /data/dcc.sqlite3 before the next deploy.
+# The app uses /data/dcc.sqlite3 when that file exists (no env var required).
 #
 FROM python:3.13-slim
 
@@ -23,7 +32,10 @@ RUN pip install -r requirements.txt
 # Only what the API needs at runtime (explicit COPYs; .dockerignore is a second guard against .env etc.).
 COPY dcc/ dcc/
 COPY data/ data/
-COPY db/dcc.sqlite3 db/dcc.sqlite3
+# Public default is the Victoria-only database. OPERATOR_DB may point at a private
+# sqlite inside the build context (gitignored). Declared after FROM so the default applies.
+ARG OPERATOR_DB=db/dcc.sqlite3
+COPY ${OPERATOR_DB} db/dcc.sqlite3
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN useradd --system --uid 10001 --home-dir /app --shell /usr/sbin/nologin app \

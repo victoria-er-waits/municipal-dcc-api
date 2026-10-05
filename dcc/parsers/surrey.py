@@ -1,33 +1,64 @@
-"""Surrey parser (thin). Schedule B of Bylaw 21174 is a dense scanned table that
-`pdftotext` garbles, so Day 1 extracted it with pdfplumber + rendered-image
-verification into data/normalized.json. This module re-ingests those curated
-rows, gated on the source PDF hash matching the manifest, and applies Day 2
-normalization (schedule/line/area parsing, unit vocabulary, rule logging).
+"""Surrey parser (paid dataset).
 
-Re-running against a *new* Surrey bylaw requires re-doing the Day 1 extraction
-(see DAY1_VERIFICATION.md) and regenerating normalized.json first."""
+The public repository does not contain Surrey rate rows. `parse()` returns []
+unless the operator supplies a private JSON file:
+
+  * `data/surrey.normalized.json` (gitignored), or
+  * the path in `DCC_SURREY_NORMALIZED`
+
+That file uses the same shape as `data/normalized.json` (`{"rates": [ ... ]}`)
+with `municipality` equal to `Surrey`. It is an input to `scripts/build_db.py`
+only. The running API reads `db/dcc.sqlite3` (or `/data/dcc.sqlite3` on Render)
+and never needs this JSON.
+
+Do not commit the private file or a SQLite database built from it.
+"""
 from __future__ import annotations
 
 import json
+import os
 import re
+from pathlib import Path
 
-from ..config import DAY1_NORMALIZED, MUNICIPALITIES
+from ..config import DAY1_NORMALIZED, MUNICIPALITIES, ROOT
 from ..normalize import SCHEDULE_AREA, make_rate_key, normalize_unit
 
 SLUG = "surrey"
+PRIVATE_NORMALIZED = ROOT / "data" / "surrey.normalized.json"
 
 
 def _fmt(v) -> str:
     return f"{v:g}" if isinstance(v, (int, float)) else str(v)
 
 
+def raw_rate_rows(day1_path=DAY1_NORMALIZED) -> list[dict]:
+    """Surrey rows from an operator file, else any leftover rows in the public fixture.
+
+    The committed fixture has none. A private file wins over the public fixture.
+    """
+    cfg = MUNICIPALITIES[SLUG]
+    candidates: list[Path] = []
+    env = os.environ.get("DCC_SURREY_NORMALIZED")
+    if env:
+        candidates.append(Path(env))
+    candidates.append(PRIVATE_NORMALIZED)
+    candidates.append(Path(day1_path))
+    for path in candidates:
+        if not path.is_file():
+            continue
+        data = json.loads(path.read_text())
+        rows = [r for r in data.get("rates", []) if r.get("municipality") == cfg["municipality"]]
+        if rows and path != Path(day1_path):
+            return rows
+        if path == Path(day1_path):
+            return rows
+    return []
+
+
 def parse(extracted_at: str | None = None, day1_path=DAY1_NORMALIZED) -> list[dict]:
     cfg = MUNICIPALITIES[SLUG]
-    data = json.loads(open(day1_path).read())
     rows: list[dict] = []
-    for r in data["rates"]:
-        if r["municipality"] != cfg["municipality"]:
-            continue
+    for r in raw_rate_rows(day1_path):
         notes = r.get("notes") or ""
         m_s = re.search(r"Schedule ([A-G])", notes)
         m_l = re.search(r"Line (\d+)", notes)
@@ -35,14 +66,14 @@ def parse(extracted_at: str | None = None, day1_path=DAY1_NORMALIZED) -> list[di
         line_no = int(m_l.group(1)) if m_l else None
         unit_norm, footnote, unit_rules = normalize_unit(r["unit"])
         rules = [
-            "parser: surrey.day1_curated v1 (Day 1 pdfplumber + rendered-image extraction of Bylaw 21174; "
-            "ingest gated on source PDF sha256 == manifest)",
-            f"rate: Day 1 numeric value {_fmt(r['rate'])} cast to decimal (source cells printed as $ amounts)",
+            "parser: surrey.day1_curated v1 (operator-supplied normalized rows; "
+            "not part of the public repository)",
+            f"rate: numeric value {_fmt(r['rate'])} cast to decimal (source cells printed as $ amounts)",
             "currency: CAD (bylaw denominated in Canadian dollars)",
             *unit_rules,
-            f"schedule/line: parsed from Day 1 notes -> Schedule {schedule}, line {line_no}",
+            f"schedule/line: parsed from notes -> Schedule {schedule}, line {line_no}",
             f"area: Schedule {schedule} -> '{SCHEDULE_AREA.get(schedule, 'unknown')}'",
-            "use_type: schedule row label as transcribed on Day 1 (zone list kept verbatim)",
+            "use_type: schedule row label as supplied by the operator extract (zone list kept verbatim)",
             f"effective_date: {cfg['effective_date']} ({cfg['effective_date_basis']})",
         ]
         if 'OCR showed "not"' in notes:

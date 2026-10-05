@@ -219,12 +219,26 @@ def detect_changes(conn: sqlite3.Connection, slug: str, from_id: int, to_id: int
 # ---------------------------------------------------------------- ingest
 def ingest(conn: sqlite3.Connection, slug: str, *, label: str | None = None, force: bool = False,
            require_hash_match: bool = True) -> dict:
+    parser_name, parse_fn = PARSERS[slug]
+    rows = parse_fn(now_iso()) if slug == "victoria" else parse_fn()
+    if slug == "surrey" and not rows:
+        # Public tree ships no Surrey schedule. Do not invent an empty snapshot:
+        # /rates/surrey then 404s with an explicit "not in this build" detail,
+        # while a database that already contains Surrey rows is left untouched.
+        return {
+            "created": False,
+            "reason": "surrey_not_bundled",
+            "rows": 0,
+            "changes": 0,
+            "detail": (
+                "Paid Surrey rates are not in this tree. The hosted API serves them from an "
+                "operator-supplied rate database (see DEPLOY.md)."
+            ),
+        }
     upsert_source(conn, slug)
     chk = check_source_local(conn, slug)
     if require_hash_match and chk["result"] != "match":
         raise RuntimeError(f"{slug}: source hash check failed: {chk}")
-    parser_name, parse_fn = PARSERS[slug]
-    rows = parse_fn(now_iso()) if slug == "victoria" else parse_fn()
     add_quality_flags(rows)
     res = create_snapshot(conn, slug, rows, label=label or f"{parser_name} ingest", parser=parser_name,
                           force=force)

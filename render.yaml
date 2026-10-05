@@ -12,6 +12,9 @@ services:
     # deploy/restart/spin-down wipes db/accounts → all issued keys and paid upgrades are lost.
     plan: 0.5c-512mb
     healthCheckPath: /health
+    # commit = a push to the tracked branch rebuilds the image from this public repo.
+    # This repo's image is Victoria-only. Copy the live rate DB to /data/dcc.sqlite3
+    # BEFORE the next deploy or paid Surrey calls 404. See DEPLOY.md. No env change required.
     autoDeployTrigger: commit
     disk:
       name: accounts

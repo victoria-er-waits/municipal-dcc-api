@@ -10,7 +10,7 @@
 | `sources` | 2 | One per bylaw PDF: sha256, URL, `source_retrieval_method`, `provisional`, Wayback URL/timestamp, version/effective dates, last check |
 | `source_checks` | 7 | Every local re-hash and live HTTPS check |
 | `snapshots` | 4 | Surrey v1, v2 and Victoria v1 (synthetic demo), v2 |
-| `rates` | 1,724 | 826 + 826 Surrey, 36 + 36 Victoria. Every row has full provenance |
+| `rates` | Victoria only in the public DB (36 + 36, current plus synthetic prior). Surrey rows are not committed. |
 | `rate_changes` | 3 | Change detector output (Victoria demo) |
 
 Per-row provenance columns: `municipality, bylaw_id, source_document, source_url, source_version_date, effective_date, extracted_value, normalization_rules (JSON), last_checked_at`, plus `source_retrieval_method, provisional, extracted_at, quality_flags, synthetic, schedule, line_no, area, unit_raw, unit_normalized, footnote_ref`.
@@ -61,29 +61,9 @@ Victoria parser parity: re-parsing Schedule A from the bylaw text extract gives 
 ```
 `GET /rates/victoria` (no filter) returns 36 rows, and all 36 have `provenance.provisional == true`.
 
-### Surrey: `GET /rates/surrey?use_type=RF-12&charge_type=Total%20DCC&schedule=B`
-```json
-{
- "municipality": "Surrey", "provisional": false, "source_retrieval_method": "official_https", "warnings": [], "count": 1,
- "rates": [{
-   "schedule": "B", "line_no": 3, "area": "Citywide (base; also base for City Centre and West Clayton)",
-   "use_type": "Single Family Residential — RF, RF-G, RF-SS, RF-12, RF-12C, RF-13", "charge_type": "Total DCC",
-   "rate": 55260.0, "currency": "CAD", "unit": "/lot", "unit_normalized": "per_lot", "effective_date": "2024-05-15",
-   "provenance": {
-     "bylaw_id": "21174", "source_document": "surrey_BYL_reg_21174.pdf",
-     "source_url": "https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf",
-     "source_version_date": "2024-05-13", "source_retrieval_method": "official_https", "provisional": false,
-     "extracted_value": "55260",
-     "normalization_rules": ["parser: surrey.day1_curated v1 (...; ingest gated on source PDF sha256 == manifest)",
-       "rate: Day 1 numeric value 55260 cast to decimal (source cells printed as $ amounts)", "currency: CAD ...",
-       "unit: '/lot' -> 'per_lot' (controlled vocabulary)", "schedule/line: parsed from Day 1 notes -> Schedule B, line 3",
-       "area: Schedule B -> 'Citywide (...)'", "use_type: ...", "effective_date: 2024-05-15 (Bylaw-defined effective date May 15, 2024)",
-       "rate: printed schedule total used even though component sum differs by $1"],
-     "extracted_at": "2026-10-05T13:14:57-07:00", "last_checked_at": "2026-10-05T13:29:19-07:00"},
-   "quality_flags": ["component_sum_variance: printed total 55260.0 vs component sum 55259.0 (diff 1.0)"]}]
-}
-```
-This matches Day 1 manual check #1 ($55,260/lot). `GET /rates/surrey` returns all 826 rows.
+### Surrey: `GET /rates/surrey`
+
+Paid. The public tree has no Surrey snapshot, so this build returns **404** with a detail that the schedule is not bundled. The hosted API (`https://municipal-dcc-api.onrender.com`) still serves the operator database for Starter and Pro keys. Response dollars are not copied into this repository. A free key receives **402** before any row is read.
 
 ## 4. Change detector
 ### `GET /changes/victoria`: non-empty (synthetic demo)
@@ -126,8 +106,8 @@ The synthetic prior values are documented in `scripts/build_db.py` (`VICTORIA_DE
 - The live re-check is logged as `bot_gated`. Nothing presents Victoria data as a fresh live retrieval.
 
 ## 6. Data quality issues (inherited from Day 1 or surfaced by Day 2 checks)
-1. **Component-sum variances:** 48 Surrey Total rows and 1 Victoria Total row differ from the sum of their components. These are now flagged per row in `quality_flags`. Almost all are ±$0.01 or ±$1, which looks like rounding in the printed schedules. **Outlier: Darts Hill CTA** (Schedule F) has a printed total of $12,360 vs a component sum of $12,358 (diff $2), which suggests an OCR/transcription error. Re-check against the PDF image. Victoria Low density: printed $24,582.06 vs sum $24,582.07 (−$0.01, appears in the bylaw itself).
-2. Surrey Schedule B line 25 (Industrial Developed Area) total = component sum ($108,405), because the printed total is OCR-ambiguous (Day 1).
+1. **Component-sum variances:** Some Surrey Total rows (operator database only) and 1 Victoria Total row differ from the sum of their components. These are flagged per row in `quality_flags` on the server that has the data. Almost all are about a cent or about a dollar, which looks like rounding in the printed schedules. One Darts Hill total was an outlier of a couple of dollars and should be re-checked against the official PDF. Victoria Low density: printed $24,582.06 vs sum $24,582.07 (−$0.01, appears in the bylaw itself).
+2. Surrey Schedule B industrial Developed Area used the component sum because the printed total was OCR-ambiguous (Day 1). That row is not in the public tree.
 3. Darts Hill single-family units: OCR read "not", interpreted as `/lot`. Recorded in `normalization_rules`.
 4. OCR artifacts carried over in Surrey `use_type` labels, e.g. "Type Ill" (should be "III"), "fioor", "{for Seniors…", "RO" vs "RQ". Labels are kept verbatim from Day 1 and not yet cleaned. Units with `(d}` are corrected to `(d)` and logged.
 5. The Surrey parser is a **thin re-ingest of Day 1 curated rows**, not a true PDF re-parse (Schedule B is a dense scan that pdftotext garbles). A new Surrey bylaw will need Day 1-style extraction first. The Victoria parser re-parses the source text directly.
@@ -135,4 +115,4 @@ The synthetic prior values are documented in `scripts/build_db.py` (`VICTORIA_DE
 7. Surrey area applicability (B+C, B+G, D/E/F replace B) is exposed through `schedule`/`area` fields only. There is no geographic lookup.
 
 ## 7. Scope: what was NOT built
-No billing, no auth or API keys, no webhooks, no UI, no marketplace, no docs site, no GitHub publish, and no cities beyond Surrey and Victoria (other slugs → 404). No Metro Vancouver regional DCCs. No scheduler or cron for checks (run `scripts/ingest.py --live` manually).
+No billing, no auth or API keys, no webhooks, no UI, no docs site, no GitHub publish, and no cities beyond Surrey and Victoria (other slugs → 404). No Metro Vancouver regional DCCs. No scheduler or cron for checks (run `scripts/ingest.py --live` manually).

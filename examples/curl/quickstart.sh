@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# First-use path for the Municipal DCC Data API (local MVP).
-# Requires the API running at BASE_URL (default http://127.0.0.1:8080).
+# First-use path for the Municipal DCC Data API.
+# Default base is the hosted API (Victoria on the free tier). Override with BASE_URL for a local server.
 # Uses DCC_API_KEY if set; otherwise creates a free key (Victoria current rates, 50 req/day).
 set -euo pipefail
-BASE_URL="${BASE_URL:-http://127.0.0.1:8080}"
+BASE_URL="${BASE_URL:-https://municipal-dcc-api.onrender.com}"
 
+echo "== 0. Docs: $BASE_URL/docs =="
+echo
 echo "== 1. Health =="
 curl -sS "$BASE_URL/health" | python3 -m json.tool
 
@@ -26,7 +28,7 @@ curl -sS -H "X-API-Key: $DCC_API_KEY" \
   "$BASE_URL/rates/victoria?use_type=medium%20density&charge_type=Total%20DCC" | python3 -m json.tool
 
 echo
-echo "== 5. Surrey RF-12 Total DCC Schedule B (Starter/Pro; free keys get 402 + upgrade_url) =="
+echo "== 5. Surrey (free key → 402; rows are not in the public repo) =="
 curl -sS -H "X-API-Key: $DCC_API_KEY" \
   "$BASE_URL/rates/surrey?use_type=RF-12&charge_type=Total%20DCC&schedule=B" | python3 -m json.tool
 

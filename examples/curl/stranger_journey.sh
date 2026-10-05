@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Day 5 stranger journey: free key -> Victoria works -> paid walls -> daily limit -> upgrade -> paid works.
 #
-#   BASE_URL=http://127.0.0.1:8080 ./examples/curl/stranger_journey.sh
+#   ./examples/curl/stranger_journey.sh
+#   BASE_URL=http://127.0.0.1:8080 ./examples/curl/stranger_journey.sh   # local Victoria-only build
 #
 # Step 6 (upgrade) uses ONE of:
 #   * ADMIN_UNLOCK_TOKEN set in your shell (manual/dev "test purchase", no Stripe needed), or
 #   * Stripe Checkout, if the operator configured STRIPE_* on the server (the script prints the URL and waits).
 # Step 5 burns the free key's 50 requests/day on purpose (it uses a throwaway second key).
 set -euo pipefail
-BASE_URL="${BASE_URL:-http://127.0.0.1:8080}"
+BASE_URL="${BASE_URL:-https://municipal-dcc-api.onrender.com}"
 # j EXPR: evaluate a Python expression over the JSON on stdin (d); on mismatch print the server's response and stop
 j() { python3 -c "
 import sys,json;d=json.load(sys.stdin)
@@ -53,9 +54,18 @@ else
   until [ "$(curl -sS -H "X-API-Key: $KEY" "$BASE_URL/v1/account" | j 'd["plan"]')" = "starter" ]; do sleep 3; done
 fi
 
-echo; echo "== 7. Paid: Surrey + changes work; Victoria still provisional =="
-curl -sS -H "X-API-Key: $KEY" "$BASE_URL/rates/surrey?use_type=RF-12&charge_type=Total%20DCC&schedule=B" \
-  | j '{"provisional": d["provisional"], "count": d["count"], "rate": d["rates"][0]["rate"]}'
+echo; echo "== 7. Paid gate: Surrey is 200 only when this server has the operator DB =="
+SURREY_CODE=$(curl -sS -o /tmp/dcc-surrey.json -w '%{http_code}' -H "X-API-Key: $KEY" \
+  "$BASE_URL/rates/surrey?use_type=RF-12&charge_type=Total%20DCC&schedule=B")
+echo "  Surrey HTTP $SURREY_CODE"
+python3 - << 'PY'
+import json
+body = json.load(open("/tmp/dcc-surrey.json"))
+if "rates" in body:
+    print({"provisional": body.get("provisional"), "count": body.get("count"), "has_rows": bool(body.get("rates"))})
+else:
+    print({k: body[k] for k in ("error", "detail", "required_plan", "message") if k in body})
+PY
 curl -sS -H "X-API-Key: $KEY" "$BASE_URL/changes/victoria" | j '{"provisional": d["provisional"], "summary": d["summary"]}'
 curl -sS -H "X-API-Key: $KEY" "$BASE_URL/rates/victoria" | j '{"victoria_provisional": d["provisional"], "method": d["source_retrieval_method"]}'
 curl -sS -w '  [HTTP %{http_code}] (history is Pro-only)\n' -H "X-API-Key: $KEY" "$BASE_URL/rates/victoria?version=1"

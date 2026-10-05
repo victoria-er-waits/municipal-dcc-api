@@ -9,6 +9,12 @@ db/accounts.sqlite3
 db/accounts.sqlite3-*
 *.accounts.sqlite3
 
+# Paid Surrey inputs. operator-data/dcc.sqlite3 is opt-in via --build-arg OPERATOR_DB
+# and is gitignored; it is NOT excluded here so an operator image build can see it.
+# Never `docker push` a public tag of an image built with that arg.
+data/surrey.normalized.json
+sources/surrey_*
+
 # Not needed at runtime
 .git
 .gitignore

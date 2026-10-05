@@ -1,8 +1,7 @@
 {
     "status": "ok",
-    "db": "/workspace/municipal-dcc-api/db/dcc.sqlite3",
+    "db": "/workspace/db/dcc.sqlite3",
     "snapshots": {
-        "surrey": 2,
         "victoria": 2
     },
     "billing": {

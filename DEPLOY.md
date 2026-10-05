@@ -1,7 +1,64 @@
 # Deploying the Municipal DCC API
 
+> **Next Render deploy of this tree drops Surrey unless you preserve the operator database first.**
+>
+> The public `Dockerfile` copies `db/dcc.sqlite3`, which is now **Victoria only**. The service already running at `https://municipal-dcc-api.onrender.com` keeps Surrey only until the next image build. `render.yaml` still has `autoDeployTrigger: commit`, so a push to the tracked branch rebuilds from git.
+>
+> This change does **not** edit Render environment variables and does **not** turn on live Stripe. Do the disk copy below **before** that rebuild. No plan upgrade is required: the service already has a disk at `/data`.
+
 Target: **one Docker web service on Render** (Blueprint: [`render.yaml`](render.yaml), image: [`Dockerfile`](Dockerfile)).
 Any Docker host (Fly.io, Railway, a VM) works the same way: build the image, mount a volume at `/data`, set env vars.
+
+---
+
+## 0. Open-core data: keep Surrey on the server, out of git
+
+| | Public git / public image | Hosted API today | After the next image build |
+|---|---|---|---|
+| Victoria rates | yes | yes | yes |
+| Surrey rates | **no** | yes (baked into the current image) | **only if** `/data/dcc.sqlite3` or a private build-arg DB is present |
+
+The app picks a rate database in this order:
+
+1. `DCC_DB` if set (do not set this on Render for this change; the disk path below needs no new variable).
+2. `/data/dcc.sqlite3` if that file exists.
+3. `db/dcc.sqlite3` inside the image (Victoria-only in the public build).
+
+### Safe rebuild (existing Render disk, no env change)
+
+Do this while the **current** image is still running, so `/app/db/dcc.sqlite3` inside the container still has Surrey.
+
+1. Render Dashboard → the service → **Shell** (SSH).
+2. Copy the live rate DB onto the persistent disk (accounts already live on that disk; this adds a second file):
+
+```bash
+cp -a /app/db/dcc.sqlite3 /data/dcc.sqlite3
+chmod 640 /data/dcc.sqlite3
+sqlite3 /data/dcc.sqlite3 "SELECT slug, COUNT(*) FROM rates GROUP BY slug;"
+```
+
+You want both `surrey` and `victoria` in that count. Leave the file there. Do not download it into this public repo.
+
+3. Pause auto-deploy (Dashboard → service → Settings) until this copy exists.
+4. Deploy the Victoria-only image (merge, or manual deploy). On boot the entrypoint chowns `/data/dcc.sqlite3` and the API serves it. `GET /health` shows `"db": "/data/dcc.sqlite3"` and a Surrey snapshot count.
+5. Confirm `GET /rates/victoria` is still 200 for a free key and `GET /rates/surrey` is still 200 for a paid key (402 for a free key).
+
+If you deploy **without** that file, Surrey endpoints return 404 `Surrey rates are not in this build` for paid keys. Victoria keeps working. Restore by copying a private backup to `/data/dcc.sqlite3` and restarting — no git commit.
+
+### Private image build (optional)
+
+```bash
+cp /secure/dcc.sqlite3 operator-data/dcc.sqlite3   # gitignored
+docker build --build-arg OPERATOR_DB=operator-data/dcc.sqlite3 -t municipal-dcc-api:operator .
+```
+
+Do not push that tag to a public registry. The public command remains `docker build -t municipal-dcc-api .` and ships Victoria only.
+
+Rebuilding the sqlite from source (operators only) needs a private `data/surrey.normalized.json` or `DCC_SURREY_NORMALIZED`, plus the official PDF at `sources/surrey_BYL_reg_21174.pdf` for the hash check:
+
+https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf
+
+`scripts/build_db.py` skips Surrey when that file is absent.
 
 > **No secrets live in this repo.** Every secret is set on the host (Render Dashboard → Environment).
 > `.env` is gitignored and excluded from the Docker build context (`.dockerignore`). `.env.example` is the template.
@@ -10,7 +67,7 @@ Any Docker host (Fly.io, Railway, a VM) works the same way: build the image, mou
 
 ## 1. What the image does
 
-- `python:3.13-slim`, installs `requirements.txt`, copies only `dcc/`, `data/`, `db/dcc.sqlite3` (rate data, read-only).
+- `python:3.13-slim`, installs `requirements.txt`, copies only `dcc/`, `data/`, and a rate DB: public `db/dcc.sqlite3` (Victoria-only) or `OPERATOR_DB` when an operator passes that build-arg.
 - Listens on `0.0.0.0:$PORT` (default **8080**) via `uvicorn dcc.api:app --proxy-headers`.
 - Accounts DB (API-key hashes, usage, Stripe ids) → `DATABASE_PATH=/data/accounts.sqlite3`. **Mount persistent storage at `/data`** or every redeploy wipes all keys and paid plans.
 - Entrypoint (`scripts/docker-entrypoint.sh`) chowns `/data`, drops root to user `app`, and logs a warning if `ADMIN_UNLOCK_TOKEN` is set.

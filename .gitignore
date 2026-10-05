@@ -41,3 +41,12 @@ credentials.json
 db/accounts.sqlite3
 db/accounts.sqlite3-*
 *.accounts.sqlite3
+
+# Paid Surrey dataset — operator-only. Never commit.
+# The tracked db/dcc.sqlite3 is the Victoria-only public fixture. If you overlay a
+# full operator database onto that path for a private image build, do not git add it.
+data/surrey.normalized.json
+operator-data/*.sqlite3
+operator-data/*.sqlite
+operator-data/*.json
+sources/surrey_*

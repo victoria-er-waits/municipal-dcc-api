@@ -11,7 +11,9 @@ DAY1_NORMALIZED = DATA_DIR / "normalized.json"
 SOURCES_MANIFEST = DATA_DIR / "sources_manifest.json"
 
 # Scope is STRICTLY Surrey + Victoria. Slug -> source registry.
-# Values here mirror data/sources_manifest.json (Day 1) and add Day 2-3 enrichment.
+# Values here mirror data/sources_manifest.json and add pipeline metadata.
+# Surrey local_path is where an operator may place a privately fetched PDF.
+# That PDF is not in the public repository.
 MUNICIPALITIES: dict[str, dict] = {
     "surrey": {
         "municipality": "Surrey",
