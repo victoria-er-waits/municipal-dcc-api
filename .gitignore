@@ -49,4 +49,6 @@ data/surrey.normalized.json
 operator-data/*.sqlite3
 operator-data/*.sqlite
 operator-data/*.json
+*operator*.sqlite3
+*operator*.sqlite3-*
 sources/surrey_*

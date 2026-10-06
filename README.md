@@ -119,8 +119,9 @@ Nothing payment-related is hardcoded, and this build runs Stripe in **test mode 
 | `STRIPE_PRICE_PRO` | Price ID of a **$149/month recurring** Price |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret (`whsec_…`) of a webhook endpoint at `{PUBLIC_BASE_URL}/v1/stripe/webhook` listening for `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted` |
 | `PUBLIC_BASE_URL` | Public URL of the API (upgrade links + Checkout success/cancel URLs). Default `http://127.0.0.1:8080` |
-| `DATABASE_PATH` | SQLite file for accounts / key hashes / usage / Stripe ids. Default `db/accounts.sqlite3` (gitignored). |
-| `DCC_DB` | Optional override for the rate DB. Unset: use `/data/dcc.sqlite3` when that file exists, otherwise `db/dcc.sqlite3` (Victoria-only in git). |
+| `DATABASE_PATH` | SQLite file for accounts / key hashes / usage / Stripe ids. Default `db/accounts.sqlite3` (gitignored); Docker/Render `/var/data/accounts.sqlite3` on the persistent disk. |
+| `OPERATOR_DB_PATH` | Operator (paid) rate DB holding Surrey, copied once onto the persistent disk (Docker/Render default `/var/data/dcc-operator.sqlite3`). Paid-only cities are served from it when the file exists; otherwise they answer 404 "not in this build". Victoria always comes from the public build DB. `GET /health` → `data_sources` shows which sources are loaded (counts only). |
+| `DCC_DB` | Dev/test override for the public rate DB. Default `db/dcc.sqlite3` (Victoria-only in git). |
 | `ADMIN_UNLOCK_TOKEN` | **Manual/dev only — leave unset in production.** Enables `POST /v1/admin/unlock` to set a key's plan without Stripe (test purchase). Unset = disabled (404). |
 
 Full walkthrough (Stripe test-mode setup, admin unlock, going live): [`DAY5_VERIFICATION.md`](DAY5_VERIFICATION.md).
@@ -182,7 +183,7 @@ Behind a reverse proxy, run uvicorn with `--proxy-headers --forwarded-allow-ips=
 
 Requirements: Python 3.11+ recommended. Node 18+ only if you run the JS example.
 
-Production / Docker: `docker build -t municipal-dcc-api . && docker run -p 8080:8080 -v dcc-accounts:/data municipal-dcc-api` — the public image is Victoria-only. **Do not deploy that image over the live Render service until the operator rate database is preserved.** Full guide, including the safe rebuild path: [DEPLOY.md](DEPLOY.md).
+Production / Docker: `docker build -t municipal-dcc-api . && docker run -p 8080:8080 -v dcc-disk:/var/data municipal-dcc-api` — the public image is Victoria-only; paid Surrey is served from the operator DB on the persistent disk (`OPERATOR_DB_PATH`). **Do not deploy that image over the live Render service until the operator DB is on its disk.** Full guide, including the safe rebuild path: [DEPLOY.md](DEPLOY.md).
 
 ---
 
@@ -230,7 +231,7 @@ A normal merge or squash-merge of this branch onto `main` **keeps the old commit
 git push --force origin cursor/open-core-boundary-3719:main
 ```
 
-That push updates `main` and, with the current Render auto-deploy setting, **starts a deploy**. Pause auto-deploy until `/data/dcc.sqlite3` on the service holds the current rate database. Otherwise the next image is Victoria-only and paid Surrey calls break.
+That push updates `main` and, with the current Render auto-deploy setting, **starts a deploy**. Pause auto-deploy until the operator DB is on the service disk at `OPERATOR_DB_PATH` (`/var/data/dcc-operator.sqlite3`) and `/health` shows `"surrey": "operator"`. Otherwise the next image is Victoria-only and paid Surrey calls break.
 
 ## License
 

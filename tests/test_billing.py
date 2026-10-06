@@ -34,6 +34,7 @@ def rates_db(tmp_path_factory):
 @pytest.fixture()
 def client(rates_db, tmp_path, monkeypatch):
     monkeypatch.setattr(api, "_DB", rates_db)
+    monkeypatch.delenv("OPERATOR_DB_PATH", raising=False)  # public build only
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "accounts.sqlite3"))
     monkeypatch.setenv("ADMIN_UNLOCK_TOKEN", ADMIN)
     for v in ("STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "STRIPE_PRICE_STARTER", "STRIPE_PRICE_PRO"):

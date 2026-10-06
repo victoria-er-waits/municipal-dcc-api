@@ -1,58 +1,62 @@
 # Deploying the Municipal DCC API
 
-> **Next Render deploy of this tree drops Surrey unless you preserve the operator database first.**
+> **Paid Surrey rates are NOT in this repository or its image.** The public `Dockerfile` copies `db/dcc.sqlite3`,
+> which is **Victoria only**. Surrey is served from an **operator SQLite file on the Render persistent disk**
+> (`OPERATOR_DB_PATH=/var/data/dcc-operator.sqlite3`), copied there once over Render SSH. A deploy of this tree
+> without that file serves Victoria normally and answers paid Surrey calls with 404 `not in this build`.
 >
-> The public `Dockerfile` copies `db/dcc.sqlite3`, which is now **Victoria only**. The service already running at `https://municipal-dcc-api.onrender.com` keeps Surrey only until the next image build. `render.yaml` still has `autoDeployTrigger: commit`, so a push to the tracked branch rebuilds from git.
->
-> This change does **not** edit Render environment variables and does **not** turn on live Stripe. Do the disk copy below **before** that rebuild. No plan upgrade is required: the service already has a disk at `/data`.
+> A persistent disk requires a **paid** Render instance (smallest: `0.5c-512mb` "Starter", $7/month) plus
+> $0.25/GB/month of disk (1 GB minimum used here = $0.25/month). A disk means a single instance and no
+> zero-downtime deploys (a few seconds of downtime per deploy). Render SSH is also paid-instance only.
 
 Target: **one Docker web service on Render** (Blueprint: [`render.yaml`](render.yaml), image: [`Dockerfile`](Dockerfile)).
-Any Docker host (Fly.io, Railway, a VM) works the same way: build the image, mount a volume at `/data`, set env vars.
+Any Docker host (Fly.io, Railway, a VM) works the same way: build the image, mount a volume at `/var/data`, set env vars.
 
 ---
 
-## 0. Open-core data: keep Surrey on the server, out of git
+## 0. Open-core data: keep Surrey on the server disk, out of git
 
-| | Public git / public image | Hosted API today | After the next image build |
+| | Public git / public image | Hosted API with operator DB on disk | Hosted API without it |
 |---|---|---|---|
-| Victoria rates | yes | yes | yes |
-| Surrey rates | **no** | yes (baked into the current image) | **only if** `/data/dcc.sqlite3` or a private build-arg DB is present |
+| Victoria rates (free) | yes | yes (always from the public build DB) | yes |
+| Surrey rates (Starter/Pro) | **no** | yes (from `OPERATOR_DB_PATH`) | 404 `not in this build` |
 
-The app picks a rate database in this order:
+How the app picks a rate database, per municipality:
 
-1. `DCC_DB` if set (do not set this on Render for this change; the disk path below needs no new variable).
-2. `/data/dcc.sqlite3` if that file exists.
-3. `db/dcc.sqlite3` inside the image (Victoria-only in the public build).
+- **Victoria** (public, `PUBLIC_SLUGS` in `dcc/config.py`): always the image's `db/dcc.sqlite3` (`DCC_DB` overrides it in dev/tests only).
+- **Surrey** (paid-only): the file at `OPERATOR_DB_PATH` when it exists (checked on every request), else the public DB (no Surrey → 404).
+- Free keys get 402 for Surrey regardless of which DBs are loaded.
+- `GET /health` → `data_sources` reports, with counts only: the public DB, the operator DB (`configured`, `loaded`, per-city
+  snapshot / current-row counts, or `error`), `serving` (`{"surrey": "operator", "victoria": "public"}` when healthy), and the accounts DB path.
 
-### Safe rebuild (existing Render disk, no env change)
+Disk layout (one Render disk mounted at `/var/data`):
 
-Do this while the **current** image is still running, so `/app/db/dcc.sqlite3` inside the container still has Surrey.
+| File | Env var | Contents |
+|---|---|---|
+| `/var/data/accounts.sqlite3` (+ `-wal`/`-shm`) | `DATABASE_PATH` | API-key hashes, plans, usage, Stripe ids |
+| `/var/data/dcc-operator.sqlite3` | `OPERATOR_DB_PATH` | operator rate DB (Surrey snapshots); never in git |
 
-1. Render Dashboard → the service → **Shell** (SSH).
-2. Copy the live rate DB onto the persistent disk (accounts already live on that disk; this adds a second file):
+Both env vars default to these paths in the image; set them explicitly on Render anyway.
 
-```bash
-cp -a /app/db/dcc.sqlite3 /data/dcc.sqlite3
-chmod 640 /data/dcc.sqlite3
-sqlite3 /data/dcc.sqlite3 "SELECT slug, COUNT(*) FROM rates GROUP BY slug;"
-```
+### One-time upload of the operator DB (Render SSH + `scp -s`)
 
-You want both `surrey` and `victoria` in that count. Leave the file there. Do not download it into this public repo.
-
-3. Pause auto-deploy (Dashboard → service → Settings) until this copy exists.
-4. Deploy the Victoria-only image (merge, or manual deploy). On boot the entrypoint chowns `/data/dcc.sqlite3` and the API serves it. `GET /health` shows `"db": "/data/dcc.sqlite3"` and a Surrey snapshot count.
-5. Confirm `GET /rates/victoria` is still 200 for a free key and `GET /rates/surrey` is still 200 for a paid key (402 for a free key).
-
-If you deploy **without** that file, Surrey endpoints return 404 `Surrey rates are not in this build` for paid keys. Victoria keeps working. Restore by copying a private backup to `/data/dcc.sqlite3` and restarting — no git commit.
-
-### Private image build (optional)
+Prerequisites: paid instance + disk live, an SSH public key added in Render → Account settings → SSH Public Keys.
+The image creates `/root/.ssh` (0700), which Render requires for SSH into Docker services.
 
 ```bash
-cp /secure/dcc.sqlite3 operator-data/dcc.sqlite3   # gitignored
-docker build --build-arg OPERATOR_DB=operator-data/dcc.sqlite3 -t municipal-dcc-api:operator .
+SVC=srv-XXXXXXXX@ssh.oregon.render.com            # Dashboard → Connect → SSH
+F=dcc-operator.sqlite3                             # private file, kept outside this repo
+sha256sum "$F"
+scp -s "$F" "$SVC:/var/data/$F.upload"
+ssh "$SVC" "sha256sum /var/data/$F.upload && mv /var/data/$F.upload /var/data/$F && chown app:app /var/data/$F && chmod 0640 /var/data/$F"
 ```
 
-Do not push that tag to a public registry. The public command remains `docker build -t municipal-dcc-api .` and ships Victoria only.
+Then restart the service (Dashboard → Manual Deploy → Restart service, or just keep going — the app checks the
+path on every request) and confirm `GET /health` shows `"surrey": "operator"`. If `scp -s` is refused, the same
+upload works as `ssh "$SVC" "cat > /var/data/$F.upload" < "$F"`.
+
+Do not put this file in git, an environment variable value, a Render secret file (1 MB limit anyway), or a Docker
+build arg. Render takes daily disk snapshots; keep your own private copy as well.
 
 Rebuilding the sqlite from source (operators only) needs a private `data/surrey.normalized.json` or `DCC_SURREY_NORMALIZED`, plus the official PDF at `sources/surrey_BYL_reg_21174.pdf` for the hash check:
 
@@ -67,16 +71,16 @@ https://www.surrey.ca/sites/default/files/bylaws/BYL_reg_21174.pdf
 
 ## 1. What the image does
 
-- `python:3.13-slim`, installs `requirements.txt`, copies only `dcc/`, `data/`, and a rate DB: public `db/dcc.sqlite3` (Victoria-only) or `OPERATOR_DB` when an operator passes that build-arg.
+- `python:3.13-slim`, installs `requirements.txt`, copies only `dcc/`, `data/`, and the public Victoria-only `db/dcc.sqlite3`.
 - Listens on `0.0.0.0:$PORT` (default **8080**) via `uvicorn dcc.api:app --proxy-headers`.
-- Accounts DB (API-key hashes, usage, Stripe ids) → `DATABASE_PATH=/data/accounts.sqlite3`. **Mount persistent storage at `/data`** or every redeploy wipes all keys and paid plans.
-- Entrypoint (`scripts/docker-entrypoint.sh`) chowns `/data`, drops root to user `app`, and logs a warning if `ADMIN_UNLOCK_TOKEN` is set.
+- Accounts DB (API-key hashes, usage, Stripe ids) → `DATABASE_PATH=/var/data/accounts.sqlite3`; operator rate DB → `OPERATOR_DB_PATH=/var/data/dcc-operator.sqlite3`. **Mount persistent storage at `/var/data`** or every redeploy wipes all keys and paid plans.
+- Entrypoint (`scripts/docker-entrypoint.sh`) chowns the disk directories and the operator DB, drops root to user `app`, and logs a warning if `ADMIN_UNLOCK_TOKEN` is set.
 
 Local smoke test (needs Docker):
 
 ```bash
 docker build -t municipal-dcc-api .
-docker run --rm -p 8080:8080 -v dcc-accounts:/data municipal-dcc-api
+docker run --rm -p 8080:8080 -v dcc-disk:/var/data municipal-dcc-api
 curl -s http://127.0.0.1:8080/health
 ```
 
@@ -94,7 +98,7 @@ Without Docker, the same command the image runs:
 ### Option A — Blueprint (uses `render.yaml`)
 
 1. Render Dashboard → **New → Blueprint** → connect GitHub repo `victoria-er-waits/municipal-dcc-api`, branch `main`.
-2. Render reads `render.yaml`: Docker web service `municipal-dcc-api`, plan `0.5c-512mb` (paid — required for the disk), 1 GB disk at `/data`, health check `/health`.
+2. Render reads `render.yaml`: Docker web service `municipal-dcc-api`, plan `0.5c-512mb` (paid — required for the disk), 1 GB disk at `/var/data`, health check `/health`.
 3. Render prompts for the `sync: false` vars. On the **first** deploy you can leave the Stripe ones blank (checkout then returns 503 `payments_not_configured`; everything else works). For `PUBLIC_BASE_URL`, enter `https://municipal-dcc-api.onrender.com` (or whatever URL Render assigns — fix it after the first deploy if it differs).
 4. Deploy → open `https://<service>.onrender.com/health` → expect `"status": "ok"`.
 
@@ -102,7 +106,7 @@ Without Docker, the same command the image runs:
 
 ### Option B — manual Web Service (no Blueprint)
 
-New → **Web Service** → repo → Runtime **Docker** → Instance type: a paid plan → Advanced: Health check path `/health`, add **Disk** (mount path `/data`, 1 GB) → add env vars from the table below.
+New → **Web Service** → repo → Runtime **Docker** → Instance type: a paid plan → Advanced: Health check path `/health`, add **Disk** (mount path `/var/data`, 1 GB) → add env vars from the table below.
 
 ### Free plan?
 
@@ -115,7 +119,8 @@ Works for a demo (`plan: free` in `render.yaml`, delete the `disk:` block) but: 
 | Var | Production value | Secret? |
 |---|---|---|
 | `PUBLIC_BASE_URL` | `https://<your-service>.onrender.com` (no trailing slash). Used in `upgrade_url` and Stripe success/cancel URLs. | no |
-| `DATABASE_PATH` | `/data/accounts.sqlite3` (already the image default; must be on the persistent disk) | no |
+| `DATABASE_PATH` | `/var/data/accounts.sqlite3` (image default; must be on the persistent disk) | no |
+| `OPERATOR_DB_PATH` | `/var/data/dcc-operator.sqlite3` (image default; file uploaded once, see §0) | no |
 | `PORT` | `8080` (set in `render.yaml`) | no |
 | `STRIPE_SECRET_KEY` | `sk_test_…` (test mode). Live keys refused unless `STRIPE_ALLOW_LIVE=true`. | **yes** |
 | `STRIPE_PRICE_STARTER` | `price_…` for $49/mo recurring | no (but keep out of git anyway) |
@@ -152,7 +157,7 @@ The container logs a `WARNING` at startup whenever it is set.
 - **Single instance only.** SQLite on a disk; Render can't scale a service with a disk. Fine for MVP traffic.
 - **Disk disables zero-downtime deploys** on Render (brief downtime per deploy).
 - **Client IP behind the proxy.** `--proxy-headers --forwarded-allow-ips=*` makes uvicorn use the **left-most** `X-Forwarded-For` entry, which a client can spoof. Impact is limited to evading the 5-free-keys-per-IP-per-day cap (free keys only unlock Victoria at 50 req/day). Without proxy headers, all users would share the proxy's IP and signups would hit the cap almost immediately — so `*` is the pragmatic default. Harden later by trusting only the platform's proxy range.
-- **Accounts DB backups:** Render disks get daily snapshots; for anything beyond test mode also copy `/data/accounts.sqlite3` off-box periodically.
+- **Accounts DB backups:** Render disks get daily snapshots; for anything beyond test mode also copy `/var/data/accounts.sqlite3` off-box periodically.
 - Interactive OpenAPI docs are public at `/docs` (no secrets exposed; admin endpoint is listed but 404s when disabled).
 
 ---
