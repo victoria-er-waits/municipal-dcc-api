@@ -16,7 +16,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
 
 from . import billing
-from .config import DB_PATH, MUNICIPALITIES, resolve_slug
+from .config import DB_PATH, MUNICIPALITIES, PUBLIC_SLUGS, resolve_slug
 from .db import connect
 
 app = FastAPI(title="Canadian Municipal DCC Data API (MVP: Surrey + Victoria)", version="0.3.0",
@@ -27,23 +27,36 @@ app = FastAPI(title="Canadian Municipal DCC Data API (MVP: Surrey + Victoria)", 
 
 
 def resolve_rate_db() -> str:
-    """Which SQLite file holds rate snapshots.
-
-    Order: explicit ``DCC_DB``, then an operator file on the persistent disk
-    (``/data/dcc.sqlite3``), then the image/repo database (Victoria-only in the
-    public tree). The disk path lets a Render redeploy keep Surrey without
-    putting that file in git and without a new environment variable.
-    """
-    explicit = os.environ.get("DCC_DB")
-    if explicit:
-        return explicit
-    on_disk = "/data/dcc.sqlite3"
-    if os.path.isfile(on_disk):
-        return on_disk
-    return str(DB_PATH)
+    """The PUBLIC rate database: ``DCC_DB`` if set (dev/tests), else the image/repo
+    ``db/dcc.sqlite3``. In the public tree this file is Victoria-only and it always
+    serves the free (public) municipalities."""
+    return os.environ.get("DCC_DB") or str(DB_PATH)
 
 
 _DB = resolve_rate_db()
+
+
+def operator_db_path() -> str | None:
+    """The OPERATOR (paid) rate database on the persistent disk, or None.
+
+    Set ``OPERATOR_DB_PATH`` (e.g. ``/var/data/dcc-operator.sqlite3``). It is checked on
+    every request, so the API falls back to the public build DB whenever the file is
+    absent (paid-only municipalities then answer 404 "not in this build"). The file is
+    never in git, an env value, or a Docker build arg; it is copied onto the disk once.
+    """
+    path = (os.environ.get("OPERATOR_DB_PATH") or "").strip()
+    return path if path and os.path.isfile(path) else None
+
+
+def rate_db_for(slug: str) -> str:
+    """Public municipalities (Victoria) always come from the public build DB. Paid-only
+    municipalities (Surrey) come from the operator DB when it is installed."""
+    if slug not in PUBLIC_SLUGS:
+        op = operator_db_path()
+        if op:
+            return op
+    return _DB
+
 
 _SURREY_ABSENT = (
     "Surrey rates are not in this build. The public repository ships Victoria only. "
@@ -125,8 +138,8 @@ def _authorize(acct, response: Response, slug: str, *, changes: bool = False, hi
     response.headers.update(headers)
 
 
-def db() -> sqlite3.Connection:
-    return connect(_DB)
+def db(slug: str | None = None) -> sqlite3.Connection:
+    return connect(rate_db_for(slug) if slug else _DB)
 
 
 def _slug_or_404(muni: str) -> str:
@@ -188,23 +201,59 @@ def _rate_dict(r) -> dict:
     }
 
 
-@app.get("/health")
-def health():
-    conn = db()
+def _source_counts(path: str, slugs) -> dict:
+    """Snapshot/row COUNTS per municipality in one rate DB (never rate values)."""
+    out: dict = {}
+    conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
     try:
-        counts = {row["slug"]: row["n"] for row in conn.execute(
-            "SELECT slug, COUNT(*) n FROM snapshots GROUP BY slug")}
-        return {"status": "ok", "db": _DB, "snapshots": counts, "billing": billing.stripe_status()}
+        for slug in slugs:
+            snaps = conn.execute("SELECT COUNT(*) FROM snapshots WHERE slug=?", (slug,)).fetchone()[0]
+            if not snaps:
+                continue
+            cur = conn.execute(
+                "SELECT COUNT(*) FROM rates WHERE snapshot_id=(SELECT snapshot_id FROM snapshots WHERE slug=? "
+                "ORDER BY version DESC LIMIT 1)", (slug,)).fetchone()[0]
+            out[slug] = {"snapshots": snaps, "current_rate_rows": cur}
     finally:
         conn.close()
+    return out
+
+
+@app.get("/health")
+def health():
+    paid_slugs = [s for s in MUNICIPALITIES if s not in PUBLIC_SLUGS]
+    public = {"path": _DB, "loaded": True, "municipalities": _source_counts(_DB, list(MUNICIPALITIES))}
+    configured = (os.environ.get("OPERATOR_DB_PATH") or "").strip() or None
+    op_path = operator_db_path()
+    operator = {"configured": bool(configured), "path": configured, "loaded": False, "municipalities": {}}
+    if op_path:
+        try:
+            operator.update(loaded=True, municipalities=_source_counts(op_path, paid_slugs))
+        except sqlite3.Error as exc:
+            operator.update(loaded=False, error=f"{type(exc).__name__}: {exc}")
+    elif configured:
+        operator["error"] = "file not found"
+    serving = {}
+    for slug in MUNICIPALITIES:
+        if slug in PUBLIC_SLUGS:
+            serving[slug] = "public" if slug in public["municipalities"] else "absent"
+        else:
+            serving[slug] = ("operator" if slug in operator["municipalities"]
+                             else "public" if slug in public["municipalities"] else "absent")
+    snapshots = {slug: (operator if src == "operator" else public)["municipalities"][slug]["snapshots"]
+                 for slug, src in serving.items() if src != "absent"}
+    return {"status": "ok", "db": _DB, "snapshots": snapshots,
+            "data_sources": {"public": public, "operator": operator, "serving": serving,
+                             "accounts_db": {"path": billing.accounts_db_path()}},
+            "billing": billing.stripe_status()}
 
 
 @app.get("/municipalities")
 def municipalities():
-    conn = db()
-    try:
-        out = []
-        for slug, cfg in MUNICIPALITIES.items():
+    out = []
+    for slug, cfg in MUNICIPALITIES.items():
+        conn = db(slug)
+        try:
             s = _snapshot(conn, slug)
             src = conn.execute("SELECT * FROM sources WHERE source_id=?", (cfg["source_id"],)).fetchone()
             out.append({
@@ -216,11 +265,11 @@ def municipalities():
                 "last_checked_at": src["last_checked_at"] if src else None,
                 "min_plan": "free" if slug in billing.PLANS["free"]["municipalities"] else "starter",
             })
-        return {"municipalities": out,
-                "access": {"auth": "X-API-Key header required for /rates and /changes",
-                           "get_key": "POST /v1/keys", "plans": "GET /v1/plans"}}
-    finally:
-        conn.close()
+        finally:
+            conn.close()
+    return {"municipalities": out,
+            "access": {"auth": "X-API-Key header required for /rates and /changes",
+                       "get_key": "POST /v1/keys", "plans": "GET /v1/plans"}}
 
 
 @app.get("/rates/{muni}")
@@ -235,13 +284,13 @@ def rates(
     acct=Depends(current_account),
 ):
     slug = _slug_or_404(muni)
-    conn = db()
+    conn = db(slug)
     try:
         cur = _snapshot(conn, slug)
         _authorize(acct, response, slug, history=version is not None and (cur is None or version != cur["version"]))
         snap = _snapshot(conn, slug, version)
         if snap is None:
-            if slug == "surrey":
+            if slug not in PUBLIC_SLUGS:
                 raise HTTPException(404, detail=_SURREY_ABSENT)
             raise HTTPException(404, detail=f"No snapshot for {slug} (version={version})")
         sql = "SELECT * FROM rates WHERE snapshot_id=?"
@@ -290,7 +339,7 @@ def changes(
     acct=Depends(current_account),
 ):
     slug = _slug_or_404(muni)
-    conn = db()
+    conn = db(slug)
     try:
         # Starter: latest diff only (current vs previous). Any other version pair = historical = Pro.
         cur = _snapshot(conn, slug)
@@ -302,7 +351,7 @@ def changes(
         name = MUNICIPALITIES[slug]["municipality"]
         to_s = _snapshot(conn, slug, to_version)
         if to_s is None:
-            if slug == "surrey":
+            if slug not in PUBLIC_SLUGS:
                 raise HTTPException(404, detail=_SURREY_ABSENT)
             raise HTTPException(404, detail="snapshot not found")
         if from_version is None:

@@ -13,19 +13,21 @@ services:
     plan: 0.5c-512mb
     healthCheckPath: /health
     # commit = a push to the tracked branch rebuilds the image from this public repo.
-    # This repo's image is Victoria-only. Copy the live rate DB to /data/dcc.sqlite3
-    # BEFORE the next deploy or paid Surrey calls 404. See DEPLOY.md. No env change required.
+    # This repo's image is Victoria-only. Paid Surrey is served from the operator DB on the disk
+    # (OPERATOR_DB_PATH), uploaded once with `scp -s` over Render SSH. See DEPLOY.md.
     autoDeployTrigger: commit
     disk:
-      name: accounts
-      mountPath: /data
-      sizeGB: 1
+      name: data
+      mountPath: /var/data
+      sizeGB: 1          # smallest disk; $0.25/GB/month
     envVars:
       # ---- non-secret ----
       - key: PORT
         value: "8080"
       - key: DATABASE_PATH
-        value: /data/accounts.sqlite3
+        value: /var/data/accounts.sqlite3
+      - key: OPERATOR_DB_PATH
+        value: /var/data/dcc-operator.sqlite3
       # Set to the final public URL, e.g. https://municipal-dcc-api.onrender.com (no trailing slash).
       - key: PUBLIC_BASE_URL
         sync: false

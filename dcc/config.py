@@ -75,6 +75,12 @@ MUNICIPALITIES: dict[str, dict] = {
 }
 
 
+# Municipalities whose rates ship in the PUBLIC build DB (db/dcc.sqlite3) and are always served
+# from it. Every other slug is paid-only and is served from the operator DB on the persistent
+# disk (env OPERATOR_DB_PATH) when that file is present; otherwise it answers 404 "not in this build".
+PUBLIC_SLUGS: tuple[str, ...] = ("victoria",)
+
+
 def resolve_slug(name: str) -> str | None:
     s = name.strip().lower()
     return s if s in MUNICIPALITIES else None

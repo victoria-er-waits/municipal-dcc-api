@@ -1,13 +1,12 @@
 # Operator rate database (not public)
 
-This directory is a **drop zone for the paid Surrey + Victoria SQLite file**. Nothing in it except this README is committed.
+Nothing in this directory except this README is committed (`.gitignore`), and nothing in it enters the Docker
+build context (`.dockerignore`). The public repository and the public image ship **Victoria only** in
+`db/dcc.sqlite3`.
 
-The public repository ships **Victoria only** in `db/dcc.sqlite3`. Surrey schedules stay here, on a private disk, or in a private artifact store.
+Paid Surrey rates are served from an **operator SQLite file on the persistent disk**, at `OPERATOR_DB_PATH`
+(Render: `/var/data/dcc-operator.sqlite3`). It is copied there once with `scp -s` over Render SSH; it is never
+put in git, an environment variable value, a secret file, or a Docker build arg. See [DEPLOY.md](../DEPLOY.md).
 
-```bash
-# Private image build (do not push the resulting image to a public registry):
-cp /secure/dcc.sqlite3 operator-data/dcc.sqlite3
-docker build --build-arg OPERATOR_DB=operator-data/dcc.sqlite3 -t municipal-dcc-api .
-```
-
-On Render, you do not need this directory. Copy the live rate database to the existing disk at `/data/dcc.sqlite3` before the next deploy. The process uses that file automatically. See [DEPLOY.md](../DEPLOY.md).
+With the file present, `GET /health` → `data_sources.serving` shows `{"surrey": "operator", "victoria": "public"}`.
+Without it, paid Surrey calls answer 404 "not in this build" and Victoria keeps working.

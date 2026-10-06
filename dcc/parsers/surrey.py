@@ -8,7 +8,7 @@ unless the operator supplies a private JSON file:
 
 That file uses the same shape as `data/normalized.json` (`{"rates": [ ... ]}`)
 with `municipality` equal to `Surrey`. It is an input to `scripts/build_db.py`
-only. The running API reads `db/dcc.sqlite3` (or `/data/dcc.sqlite3` on Render)
+only. The running API reads `db/dcc.sqlite3` plus, for paid cities, the operator DB at `OPERATOR_DB_PATH` on the Render disk
 and never needs this JSON.
 
 Do not commit the private file or a SQLite database built from it.
